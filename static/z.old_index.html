@@ -41,15 +41,6 @@
             opacity: 0.9;
         }
 
-        .session-info {
-            background: rgba(255,255,255,0.2);
-            padding: 10px;
-            border-radius: 10px;
-            margin-top: 15px;
-            font-size: 0.9em;
-            color: white;
-        }
-
         .card {
             background: white;
             border-radius: 20px;
@@ -310,9 +301,6 @@
         <div class="header">
             <h1>🚑 Paramedic Assistant</h1>
             <p>Makkah Emergency Medical Services - AI-Powered Report Generation</p>
-            <div class="session-info">
-                <div>Session ID: <span id="sessionDisplay">Initializing...</span></div>
-            </div>
         </div>
 
         <div class="card">
@@ -331,30 +319,6 @@
     </div>
 
     <script>
-        // ========== SESSION MANAGEMENT ==========
-        // Get or create unique session ID for this browser/device
-        function getOrCreateSessionId() {
-            let sessionId = localStorage.getItem('paramedic_session_id');
-            if (!sessionId) {
-                // Generate new UUID v4
-                sessionId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                    const r = Math.random() * 16 | 0;
-                    const v = c == 'x' ? r : (r & 0x3 | 0x8);
-                    return v.toString(16);
-                });
-                localStorage.setItem('paramedic_session_id', sessionId);
-                console.log('📱 Created new session:', sessionId);
-            } else {
-                console.log('📱 Using existing session:', sessionId);
-            }
-            return sessionId;
-        }
-
-        // Initialize session
-        const SESSION_ID = getOrCreateSessionId();
-        document.getElementById('sessionDisplay').textContent = SESSION_ID.substring(0, 8) + '...';
-
-        // ========== RECORDING STATE ==========
         let isRecording = false;
         let isProcessing = false;
 
@@ -363,7 +327,6 @@
         const statusText = document.getElementById('statusText');
         const reportSection = document.getElementById('reportSection');
 
-        // ========== API CALLS ==========
         async function toggleRecording() {
             if (isProcessing) return;
 
@@ -377,18 +340,11 @@
         async function startRecording() {
             try {
                 const response = await fetch('/api/start-recording', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        session_id: SESSION_ID
-                    })
+                    method: 'POST'
                 });
 
                 if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.detail || 'Failed to start recording');
+                    throw new Error('Failed to start recording');
                 }
 
                 isRecording = true;
@@ -396,8 +352,6 @@
                 buttonText.textContent = 'Stop Recording';
                 statusText.textContent = '🔴 Recording in progress... Click to stop';
                 reportSection.style.display = 'none';
-
-                console.log('🎙️  Recording started for session:', SESSION_ID.substring(0, 8));
 
             } catch (error) {
                 showError('Failed to start recording: ' + error.message);
@@ -413,18 +367,11 @@
                 statusText.textContent = '⏳ Processing... Transcribing and analyzing...';
 
                 const response = await fetch('/api/stop-recording', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        session_id: SESSION_ID
-                    })
+                    method: 'POST'
                 });
 
                 if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.detail || 'Failed to process recording');
+                    throw new Error('Failed to process recording');
                 }
 
                 const data = await response.json();
@@ -434,8 +381,6 @@
                 recordButton.className = 'record-button idle';
                 buttonText.textContent = 'Start Recording';
                 statusText.textContent = '✅ Report generated successfully!';
-
-                console.log('✅ Processing completed for session:', SESSION_ID.substring(0, 8));
 
             } catch (error) {
                 showError('Failed to process recording: ' + error.message);
@@ -447,7 +392,6 @@
             }
         }
 
-        // ========== UI UPDATES ==========
         function displayReport(data) {
             const analysis = data.analysis;
             
@@ -536,34 +480,22 @@
             reportSection.style.display = 'block';
         }
 
-        // ========== CHECK STATUS ON LOAD ==========
+        // Check status on page load
         async function checkStatus() {
             try {
-                const response = await fetch('/api/status', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        session_id: SESSION_ID
-                    })
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.recording) {
-                        isRecording = true;
-                        recordButton.className = 'record-button recording';
-                        buttonText.textContent = 'Stop Recording';
-                        statusText.textContent = '🔴 Recording in progress... Click to stop';
-                    }
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                if (data.recording) {
+                    isRecording = true;
+                    recordButton.className = 'record-button recording';
+                    buttonText.textContent = 'Stop Recording';
+                    statusText.textContent = '🔴 Recording in progress... Click to stop';
                 }
             } catch (error) {
                 console.error('Failed to check status:', error);
             }
         }
 
-        // Initialize on page load
         checkStatus();
     </script>
 </body>

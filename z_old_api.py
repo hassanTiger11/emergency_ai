@@ -3,20 +3,18 @@ import wave
 import json
 import queue
 import threading
-import uuid
 from pathlib import Path
 from datetime import datetime
-from typing import Optional, Dict
+from typing import Optional
 
 import numpy as np
 import sounddevice as sd
 from dotenv import load_dotenv
 from openai import OpenAI
-from fastapi import FastAPI, HTTPException, Body
+from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 
 # ============ CONFIG ============
 SAMPLE_RATE = 16000
@@ -46,7 +44,6 @@ app.add_middleware(
 
 # ---------- Audio Recording Class ----------
 class Recorder:
-    """Thread-safe audio recorder for a single session"""
     def __init__(self, samplerate=SAMPLE_RATE, channels=CHANNELS, dtype=DTYPE):
         self.samplerate = samplerate
         self.channels = channels
@@ -108,50 +105,8 @@ class Recorder:
         return audio
 
 
-# ---------- Session Management ----------
-class SessionManager:
-    """Manages multiple recording sessions (one per device/browser)"""
-    def __init__(self):
-        self.sessions: Dict[str, Recorder] = {}
-        self._lock = threading.Lock()
-    
-    def get_or_create_recorder(self, session_id: str) -> Recorder:
-        """Get existing recorder for session or create new one"""
-        with self._lock:
-            if session_id not in self.sessions:
-                print(f"📱 Creating new session: {session_id}")
-                self.sessions[session_id] = Recorder()
-            return self.sessions[session_id]
-    
-    def get_recorder(self, session_id: str) -> Optional[Recorder]:
-        """Get existing recorder for session (or None)"""
-        return self.sessions.get(session_id)
-    
-    def cleanup_session(self, session_id: str):
-        """Remove a session and its recorder"""
-        with self._lock:
-            if session_id in self.sessions:
-                recorder = self.sessions[session_id]
-                if recorder.is_recording():
-                    recorder.stop()
-                del self.sessions[session_id]
-                print(f"🗑️  Cleaned up session: {session_id}")
-    
-    def get_active_sessions(self) -> list:
-        """Get list of active session IDs"""
-        return list(self.sessions.keys())
-    
-    def get_session_count(self) -> int:
-        """Get total number of active sessions"""
-        return len(self.sessions)
-
-# Global session manager (handles all devices)
-session_manager = SessionManager()
-
-
-# ---------- Request/Response Models ----------
-class SessionRequest(BaseModel):
-    session_id: str
+# Global recorder instance
+recorder = Recorder()
 
 
 # ---------- Helper Functions ----------
@@ -330,20 +285,16 @@ def analyze_transcript(transcript: str) -> dict:
 
 
 def timestamp_yyyymmddhhmm() -> str:
-    return datetime.now().strftime("%Y%m%d%H%M%S")
+    return datetime.now().strftime("%Y%m%d%H%M")
 
 
-def save_outputs(transcript: str, analysis: dict, session_id: str, ts: str):
-    """Save outputs with session ID prefix for tracking"""
-    # Shorten session ID to first 8 chars for filename
-    short_session = session_id[:8]
-    
-    (OUTPUT_DIR / f"{short_session}_{ts}_transcript.txt").write_text(transcript, encoding="utf-8")
-    (OUTPUT_DIR / f"{short_session}_{ts}_analysis.json").write_text(
+def save_outputs(transcript: str, analysis: dict, ts: str):
+    (OUTPUT_DIR / f"transcript_{ts}.txt").write_text(transcript, encoding="utf-8")
+    (OUTPUT_DIR / f"analysis_{ts}.json").write_text(
         json.dumps(analysis, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     if isinstance(analysis, dict) and analysis.get("form_en"):
-        (OUTPUT_DIR / f"{short_session}_{ts}_report.txt").write_text(analysis["form_en"], encoding="utf-8")
+        (OUTPUT_DIR / f"report_en_{ts}.txt").write_text(analysis["form_en"], encoding="utf-8")
 
 
 # ---------- API Endpoints ----------
@@ -357,41 +308,23 @@ async def root():
 
 
 @app.post("/api/start-recording")
-async def start_recording(request: SessionRequest):
-    """Start audio recording for a specific session"""
-    session_id = request.session_id
-    
-    # Get or create recorder for this session
-    recorder = session_manager.get_or_create_recorder(session_id)
-    
+async def start_recording():
+    """Start audio recording"""
     if recorder.is_recording():
-        raise HTTPException(status_code=400, detail="Recording already in progress for this session")
+        raise HTTPException(status_code=400, detail="Recording already in progress")
     
     try:
         recorder.start()
-        print(f"🎙️  Started recording for session: {session_id[:8]}...")
-        return {
-            "status": "recording",
-            "message": "Recording started",
-            "session_id": session_id
-        }
+        return {"status": "recording", "message": "Recording started"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to start recording: {str(e)}")
 
 
 @app.post("/api/stop-recording")
-async def stop_recording(request: SessionRequest):
-    """Stop recording and process the audio for a specific session"""
-    session_id = request.session_id
-    
-    # Get recorder for this session
-    recorder = session_manager.get_recorder(session_id)
-    
-    if not recorder:
-        raise HTTPException(status_code=404, detail="Session not found")
-    
+async def stop_recording():
+    """Stop recording and process the audio"""
     if not recorder.is_recording():
-        raise HTTPException(status_code=400, detail="No recording in progress for this session")
+        raise HTTPException(status_code=400, detail="No recording in progress")
     
     try:
         # Stop recording
@@ -401,30 +334,22 @@ async def stop_recording(request: SessionRequest):
         if audio.size == 0:
             raise HTTPException(status_code=400, detail="No audio captured")
         
-        # Generate timestamp
+        # Save audio
         ts = timestamp_yyyymmddhhmm()
-        short_session = session_id[:8]
-        
-        # Save audio with session prefix
-        wav_path = OUTPUT_DIR / f"{short_session}_{ts}_recording.wav"
+        wav_path = OUTPUT_DIR / f"recording_{ts}.wav"
         write_wav(wav_path, audio, SAMPLE_RATE)
-        print(f"💾 Saved audio: {wav_path.name}")
         
         # Transcribe
-        print(f"🔄 Transcribing audio for session: {short_session}...")
         transcript = transcribe_with_whisper(wav_path)
         
         # Analyze
-        print(f"🧠 Analyzing transcript for session: {short_session}...")
         analysis = analyze_transcript(transcript)
         
         # Save outputs
-        save_outputs(transcript, analysis, session_id, ts)
-        print(f"✅ Completed processing for session: {short_session}")
+        save_outputs(transcript, analysis, ts)
         
         return JSONResponse(content={
             "status": "completed",
-            "session_id": session_id,
             "timestamp": ts,
             "transcript": transcript,
             "analysis": analysis
@@ -433,39 +358,15 @@ async def stop_recording(request: SessionRequest):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Error processing session {session_id[:8]}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Processing failed: {str(e)}")
 
 
-@app.post("/api/status")
-async def get_status(request: SessionRequest):
-    """Get current recording status for a specific session"""
-    session_id = request.session_id
-    recorder = session_manager.get_recorder(session_id)
-    
+@app.get("/api/status")
+async def get_status():
+    """Get current recording status"""
     return {
-        "session_id": session_id,
-        "recording": recorder.is_recording() if recorder else False,
-        "session_exists": recorder is not None
+        "recording": recorder.is_recording()
     }
-
-
-@app.get("/api/sessions")
-async def get_sessions():
-    """Get info about all active sessions (admin/debug endpoint)"""
-    sessions = session_manager.get_active_sessions()
-    return {
-        "active_sessions": len(sessions),
-        "session_ids": [s[:8] + "..." for s in sessions]  # Show first 8 chars
-    }
-
-
-@app.post("/api/cleanup-session")
-async def cleanup_session(request: SessionRequest):
-    """Manually cleanup a session (optional)"""
-    session_id = request.session_id
-    session_manager.cleanup_session(session_id)
-    return {"status": "cleaned", "session_id": session_id}
 
 
 if __name__ == "__main__":

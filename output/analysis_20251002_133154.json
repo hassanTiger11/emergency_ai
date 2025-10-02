@@ -1,0 +1,50 @@
+{
+  "patient": {
+    "name": "Asma",
+    "gender": "أنثى",
+    "age": "25",
+    "nationality": "غير سعودي",
+    "ID": null
+  },
+  "scene": {
+    "date": null,
+    "time": null,
+    "caller_phone": null,
+    "location": null,
+    "case_code": null,
+    "case_type": "طبي",
+    "mechanism": null
+  },
+  "chief_complaint": "صداع وارتفاع ضغط الدم وغثيان",
+  "history": {
+    "onset": "منذ ثلاثة أيام",
+    "duration": null,
+    "associated_symptoms": [
+      "غثيان",
+      "رغبة في النوم"
+    ],
+    "allergies": null,
+    "medications": "أسبرين",
+    "past_history": null,
+    "last_meal": null,
+    "events": null
+  },
+  "vitals": {
+    "bp_systolic": null,
+    "bp_diastolic": null,
+    "hr": null,
+    "rr": null,
+    "spo2": null,
+    "temp": 36,
+    "gcs": null,
+    "pain_scale_0_10": null
+  },
+  "exam": "ضغط الدم طبيعي",
+  "interventions": [
+    "إعطاء أسبرين"
+  ],
+  "severity": "Medium",
+  "recommendation": "Treat on site",
+  "reasoning": "الحالة مستقرة ولا توجد علامات خطورة واضحة.",
+  "form_ar": "اسم المريض: أسماء، العمر: 25 سنة، الجنس: أنثى، الشكوى الرئيسية: صداع وارتفاع ضغط الدم وغثيان، تاريخ الحالة: منذ ثلاثة أيام، الأعراض المرتبطة: غثيان ورغبة في النوم، الفحص: ضغط الدم طبيعي، التدخلات: إعطاء أسبرين، شدة الحالة: متوسطة، التوصية: العلاج في الموقع."
+}

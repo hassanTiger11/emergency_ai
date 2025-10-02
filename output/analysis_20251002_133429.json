@@ -1,0 +1,47 @@
+{
+  "patient": {
+    "name": null,
+    "gender": null,
+    "age": null,
+    "nationality": "Saudi",
+    "ID": null
+  },
+  "scene": {
+    "date": "2023-10-01",
+    "time": "00:00",
+    "caller_phone": null,
+    "location": null,
+    "case_code": null,
+    "case_type": "Medical",
+    "mechanism": null
+  },
+  "chief_complaint": "Can't breathe and can't talk",
+  "history": {
+    "onset": null,
+    "duration": null,
+    "associated_symptoms": [
+      "high blood pressure"
+    ],
+    "allergies": null,
+    "medications": null,
+    "past_history": "possible heart problems",
+    "last_meal": null,
+    "events": null
+  },
+  "vitals": {
+    "bp_systolic": 39,
+    "bp_diastolic": null,
+    "hr": null,
+    "rr": null,
+    "spo2": null,
+    "temp": 36,
+    "gcs": null,
+    "pain_scale_0_10": null
+  },
+  "exam": null,
+  "interventions": [],
+  "severity": "Very High",
+  "recommendation": "Transfer to hospital",
+  "reasoning": "Patient has difficulty breathing and possible heart issues, indicating a high-risk situation.",
+  "form_en": "Patient presents with difficulty breathing and inability to talk. Vital signs show high blood pressure and normal temperature. Possible history of heart problems. Recommend transfer to hospital."
+}

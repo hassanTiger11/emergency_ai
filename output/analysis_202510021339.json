@@ -1,0 +1,51 @@
+{
+  "patient": {
+    "name": "Asma",
+    "gender": "Female",
+    "age": "N/A",
+    "nationality": "Saudi",
+    "ID": "N/A"
+  },
+  "scene": {
+    "date": "N/A",
+    "time": "N/A",
+    "caller_phone": "N/A",
+    "location": "N/A",
+    "case_code": "N/A",
+    "case_type": "Medical",
+    "mechanism": "Other"
+  },
+  "chief_complaint": "Headache for three days with difficulty breathing.",
+  "history": {
+    "onset": "Three days ago",
+    "duration": "Three days",
+    "associated_symptoms": [
+      "fever",
+      "fatigue",
+      "difficulty breathing"
+    ],
+    "allergies": "N/A",
+    "medications": "N/A",
+    "past_history": "N/A",
+    "last_meal": "N/A",
+    "events": "N/A"
+  },
+  "vitals": {
+    "bp_systolic": null,
+    "bp_diastolic": null,
+    "hr": null,
+    "rr": null,
+    "spo2": null,
+    "temp": null,
+    "gcs": null,
+    "pain_scale_0_10": null
+  },
+  "exam": "N/A",
+  "interventions": [
+    "N/A"
+  ],
+  "severity": "High",
+  "recommendation": "Transfer to hospital",
+  "reasoning": "Patient shows signs of severe headache, difficulty breathing, and fatigue.",
+  "form_en": "==== PATIENT INFO ====\nName              : Asma\nGender            : Female\nAge               : N/A\nNationality       : Saudi\nID                : N/A\n\n==== SCENE DETAILS ====\nDate              : N/A\nTime              : N/A\nCaller Phone      : N/A\nLocation          : N/A\nCase Code         : N/A\nCase Type         : Medical\nMechanism         : Other\n\n==== CHIEF COMPLAINT ====\nHeadache for three days with difficulty breathing.\n\n==== HISTORY (SAMPLE) ====\nOnset             : Three days ago\nDuration          : Three days\nAssociated Sx     : fever, fatigue, difficulty breathing\nAllergies         : N/A\nMedications       : N/A\nPast History      : N/A\nLast Meal         : N/A\nEvents            : N/A\n\n==== VITALS ====\nBP (Sys/Dia)      : N/A\nHeart Rate        : N/A\nResp Rate         : N/A\nSpO2              : N/A\nTemperature       : N/A\nGCS               : N/A\nPain (0-10)       : N/A\n\n==== EXAM FINDINGS ====\nN/A\n\n==== INTERVENTIONS ====\n- N/A\n\n==== SEVERITY & ACTION ====\nSeverity          : High\nRecommendation    : Transfer to hospital\nReasoning         : Patient shows signs of severe headache, difficulty breathing, and fatigue."
+}

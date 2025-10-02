@@ -1,16 +1,27 @@
 import os
+import wave
 import json
-import shutil
+import queue
+import threading
+import uuid
 from pathlib import Path
 from datetime import datetime
+from typing import Optional, Dict
 
+import numpy as np
+import sounddevice as sd
 from dotenv import load_dotenv
 from openai import OpenAI
-from fastapi import FastAPI, HTTPException, File, UploadFile, Form
+from fastapi import FastAPI, HTTPException, Body
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 # ============ CONFIG ============
+SAMPLE_RATE = 16000
+CHANNELS = 1
+DTYPE = "int16"
 OUTPUT_DIR = Path("output")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
@@ -33,9 +44,127 @@ app.add_middleware(
 )
 
 
+# ---------- Audio Recording Class ----------
+class Recorder:
+    """Thread-safe audio recorder for a single session"""
+    def __init__(self, samplerate=SAMPLE_RATE, channels=CHANNELS, dtype=DTYPE):
+        self.samplerate = samplerate
+        self.channels = channels
+        self.dtype = dtype
+        self._q = queue.Queue()
+        self._frames = []
+        self._stream = None
+        self._recording = False
+        self._thread = None
+
+    def _callback(self, indata, frames, time_, status):
+        if status:
+            pass
+        self._q.put(indata.copy())
+
+    def _record_loop(self):
+        while self._recording:
+            try:
+                data = self._q.get(timeout=0.1)
+                self._frames.append(data)
+            except queue.Empty:
+                pass
+
+    def start(self):
+        if self._recording:
+            return
+        self._frames = []
+        self._recording = True
+        self._stream = sd.InputStream(
+            samplerate=self.samplerate,
+            channels=self.channels,
+            dtype=self.dtype,
+            callback=self._callback,
+            blocksize=0
+        )
+        self._stream.start()
+        self._thread = threading.Thread(target=self._record_loop, daemon=True)
+        self._thread.start()
+
+    def stop(self):
+        if not self._recording:
+            return
+        self._recording = False
+        if self._thread:
+            self._thread.join(timeout=2)
+        if self._stream:
+            self._stream.stop()
+            self._stream.close()
+
+    def is_recording(self):
+        return self._recording
+
+    def get_audio(self) -> np.ndarray:
+        if not self._frames:
+            return np.zeros((0, self.channels), dtype=self.dtype)
+        audio = np.concatenate(self._frames, axis=0)
+        if audio.ndim == 2 and audio.shape[1] == 1:
+            audio = audio.reshape(-1)
+        return audio
+
+
+# ---------- Session Management ----------
+class SessionManager:
+    """Manages multiple recording sessions (one per device/browser)"""
+    def __init__(self):
+        self.sessions: Dict[str, Recorder] = {}
+        self._lock = threading.Lock()
+    
+    def get_or_create_recorder(self, session_id: str) -> Recorder:
+        """Get existing recorder for session or create new one"""
+        with self._lock:
+            if session_id not in self.sessions:
+                print(f"📱 Creating new session: {session_id}")
+                self.sessions[session_id] = Recorder()
+            return self.sessions[session_id]
+    
+    def get_recorder(self, session_id: str) -> Optional[Recorder]:
+        """Get existing recorder for session (or None)"""
+        return self.sessions.get(session_id)
+    
+    def cleanup_session(self, session_id: str):
+        """Remove a session and its recorder"""
+        with self._lock:
+            if session_id in self.sessions:
+                recorder = self.sessions[session_id]
+                if recorder.is_recording():
+                    recorder.stop()
+                del self.sessions[session_id]
+                print(f"🗑️  Cleaned up session: {session_id}")
+    
+    def get_active_sessions(self) -> list:
+        """Get list of active session IDs"""
+        return list(self.sessions.keys())
+    
+    def get_session_count(self) -> int:
+        """Get total number of active sessions"""
+        return len(self.sessions)
+
+# Global session manager (handles all devices)
+session_manager = SessionManager()
+
+
+# ---------- Request/Response Models ----------
+class SessionRequest(BaseModel):
+    session_id: str
+
+
 # ---------- Helper Functions ----------
+def write_wav(path: Path, audio: np.ndarray, samplerate=SAMPLE_RATE):
+    path = Path(path)
+    with wave.open(str(path), 'wb') as wf:
+        wf.setnchannels(1)
+        wf.setsampwidth(2)  # int16
+        wf.setframerate(samplerate)
+        wf.writeframes(audio.tobytes())
+
+
 def transcribe_with_whisper(wav_path: Path) -> str:
-    """Transcribe audio file using OpenAI Whisper"""
     with open(wav_path, "rb") as f:
         resp = client.audio.translations.create(
             model=MODEL_TRANSCRIBE,
@@ -206,6 +335,7 @@ def timestamp_yyyymmddhhmm() -> str:
 
 def save_outputs(transcript: str, analysis: dict, session_id: str, ts: str):
     """Save outputs with session ID prefix for tracking"""
+    # Shorten session ID to first 8 chars for filename
     short_session = session_id[:8]
     
     (OUTPUT_DIR / f"{short_session}_{ts}_transcript.txt").write_text(transcript, encoding="utf-8")
@@ -226,25 +356,58 @@ async def root():
     return {"message": "Paramedic Assistant API is running"}
 
 
-@app.post("/api/upload-audio")
-async def upload_audio(
-    session_id: str = Form(...),
-    audio_file: UploadFile = File(...)
-):
-    """
-    Accept audio file from browser and process it.
-    Browser records audio using MediaRecorder API and uploads it here.
-    """
+@app.post("/api/start-recording")
+async def start_recording(request: SessionRequest):
+    """Start audio recording for a specific session"""
+    session_id = request.session_id
+    
+    # Get or create recorder for this session
+    recorder = session_manager.get_or_create_recorder(session_id)
+    
+    if recorder.is_recording():
+        raise HTTPException(status_code=400, detail="Recording already in progress for this session")
+    
     try:
+        recorder.start()
+        print(f"🎙️  Started recording for session: {session_id[:8]}...")
+        return {
+            "status": "recording",
+            "message": "Recording started",
+            "session_id": session_id
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to start recording: {str(e)}")
+
+
+@app.post("/api/stop-recording")
+async def stop_recording(request: SessionRequest):
+    """Stop recording and process the audio for a specific session"""
+    session_id = request.session_id
+    
+    # Get recorder for this session
+    recorder = session_manager.get_recorder(session_id)
+    
+    if not recorder:
+        raise HTTPException(status_code=404, detail="Session not found")
+    
+    if not recorder.is_recording():
+        raise HTTPException(status_code=400, detail="No recording in progress for this session")
+    
+    try:
+        # Stop recording
+        recorder.stop()
+        audio = recorder.get_audio()
+        
+        if audio.size == 0:
+            raise HTTPException(status_code=400, detail="No audio captured")
+        
         # Generate timestamp
         ts = timestamp_yyyymmddhhmm()
         short_session = session_id[:8]
         
-        # Save uploaded audio file
+        # Save audio with session prefix
         wav_path = OUTPUT_DIR / f"{short_session}_{ts}_recording.wav"
-        with wav_path.open("wb") as buffer:
-            shutil.copyfileobj(audio_file.file, buffer)
-        
+        write_wav(wav_path, audio, SAMPLE_RATE)
         print(f"💾 Saved audio: {wav_path.name}")
         
         # Transcribe
@@ -267,15 +430,42 @@ async def upload_audio(
             "analysis": analysis
         })
         
+    except HTTPException:
+        raise
     except Exception as e:
-        print(f"❌ Error processing: {str(e)}")
+        print(f"❌ Error processing session {session_id[:8]}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Processing failed: {str(e)}")
 
 
-@app.get("/api/health")
-async def health_check():
-    """Health check endpoint"""
-    return {"status": "ok", "service": "Paramedic Assistant API"}
+@app.post("/api/status")
+async def get_status(request: SessionRequest):
+    """Get current recording status for a specific session"""
+    session_id = request.session_id
+    recorder = session_manager.get_recorder(session_id)
+    
+    return {
+        "session_id": session_id,
+        "recording": recorder.is_recording() if recorder else False,
+        "session_exists": recorder is not None
+    }
+
+
+@app.get("/api/sessions")
+async def get_sessions():
+    """Get info about all active sessions (admin/debug endpoint)"""
+    sessions = session_manager.get_active_sessions()
+    return {
+        "active_sessions": len(sessions),
+        "session_ids": [s[:8] + "..." for s in sessions]  # Show first 8 chars
+    }
+
+
+@app.post("/api/cleanup-session")
+async def cleanup_session(request: SessionRequest):
+    """Manually cleanup a session (optional)"""
+    session_id = request.session_id
+    session_manager.cleanup_session(session_id)
+    return {"status": "cleaned", "session_id": session_id}
 
 
 if __name__ == "__main__":

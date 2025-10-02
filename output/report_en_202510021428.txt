@@ -1,0 +1,48 @@
+==== PATIENT INFO ====
+Name              : N/A
+Gender            : N/A
+Age               : N/A
+Nationality       : Non-Saudi
+ID                : N/A
+
+==== SCENE DETAILS ====
+Date              : 2023-10-01
+Time              : 00:00
+Caller Phone      : N/A
+Location          : N/A
+Case Code         : N/A
+Case Type         : Medical
+Mechanism         : N/A
+
+==== CHIEF COMPLAINT ====
+Headache, back pain, inability to move arms, suffocation.
+
+==== HISTORY (SAMPLE) ====
+Onset             : N/A
+Duration          : N/A
+Associated Sx     : suffocating, can't eat or drink, can't sleep or breathe
+Allergies         : N/A
+Medications       : N/A
+Past History      : N/A
+Last Meal         : N/A
+Events            : N/A
+
+==== VITALS ====
+BP (Sys/Dia)      : 126/80
+Heart Rate        : N/A
+Resp Rate         : N/A
+SpO2              : N/A
+Temperature       : 37°C
+GCS               : N/A
+Pain (0-10)       : N/A
+
+==== EXAM FINDINGS ====
+Patient exhibits signs of distress and inability to breathe properly.
+
+==== INTERVENTIONS ====
+- Recommended to go to the hospital for rest.
+
+==== SEVERITY & ACTION ====
+Severity          : High
+Recommendation    : Transfer to hospital
+Reasoning         : Patient shows signs of severe distress and inability to breathe properly.

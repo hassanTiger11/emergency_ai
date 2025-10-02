@@ -1,0 +1,45 @@
+{
+  "patient": {
+    "name": null,
+    "gender": null,
+    "age": null,
+    "nationality": null,
+    "ID": null
+  },
+  "scene": {
+    "date": null,
+    "time": null,
+    "caller_phone": null,
+    "location": null,
+    "case_code": null,
+    "case_type": null,
+    "mechanism": null
+  },
+  "chief_complaint": "N/A",
+  "history": {
+    "onset": null,
+    "duration": null,
+    "associated_symptoms": [],
+    "allergies": null,
+    "medications": null,
+    "past_history": null,
+    "last_meal": null,
+    "events": null
+  },
+  "vitals": {
+    "bp_systolic": null,
+    "bp_diastolic": null,
+    "hr": null,
+    "rr": null,
+    "spo2": null,
+    "temp": null,
+    "gcs": null,
+    "pain_scale_0_10": null
+  },
+  "exam": null,
+  "interventions": [],
+  "severity": "Very Low",
+  "recommendation": "Treat on site",
+  "reasoning": "No information available to assess severity.",
+  "form_en": "==== PATIENT INFO ====\nName              : N/A\nGender            : N/A\nAge               : N/A\nNationality       : N/A\nID                : N/A\n\n==== SCENE DETAILS ====\nDate              : N/A\nTime              : N/A\nCaller Phone      : N/A\nLocation          : N/A\nCase Code         : N/A\nCase Type         : N/A\nMechanism         : N/A\n\n==== CHIEF COMPLAINT ====\nN/A\n\n==== HISTORY (SAMPLE) ====\nOnset             : N/A\nDuration          : N/A\nAssociated Sx     : N/A\nAllergies         : N/A\nMedications       : N/A\nPast History      : N/A\nLast Meal         : N/A\nEvents            : N/A\n\n==== VITALS ====\nBP (Sys/Dia)      : N/A\nHeart Rate        : N/A\nResp Rate         : N/A\nSpO2              : N/A\nTemperature       : N/A\nGCS               : N/A\nPain (0-10)       : N/A\n\n==== EXAM FINDINGS ====\nN/A\n\n==== INTERVENTIONS ====\n- N/A\n\n==== SEVERITY & ACTION ====\nSeverity          : Very Low\nRecommendation    : Treat on site\nReasoning         : No information available to assess severity."
+}

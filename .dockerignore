@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Output files (will be created in container)
+output/
+
+# Documentation
+README.md
+
+# Original CLI version
+transcribe.py
+
+# Environment (will be set via Render)
+.env
+
+# Jupyter notebooks
+*.ipynb
+
+# OS
+.DS_Store
+Thumbs.db
+

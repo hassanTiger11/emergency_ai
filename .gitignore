@@ -1,1 +1,25 @@
+# Environment variables
 .env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Output files (optional - uncomment to ignore)
+# output/
+
+# OS
+.DS_Store
+Thumbs.db

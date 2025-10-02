@@ -1,0 +1,51 @@
+{
+  "patient": {
+    "name": null,
+    "gender": null,
+    "age": null,
+    "nationality": "Non-Saudi",
+    "ID": null
+  },
+  "scene": {
+    "date": "2023-10-01",
+    "time": "00:00",
+    "caller_phone": null,
+    "location": null,
+    "case_code": null,
+    "case_type": "Medical",
+    "mechanism": null
+  },
+  "chief_complaint": "Headache, back pain, inability to move arms, suffocation.",
+  "history": {
+    "onset": null,
+    "duration": null,
+    "associated_symptoms": [
+      "suffocating",
+      "can't eat or drink",
+      "can't sleep or breathe"
+    ],
+    "allergies": null,
+    "medications": null,
+    "past_history": null,
+    "last_meal": null,
+    "events": null
+  },
+  "vitals": {
+    "bp_systolic": 126,
+    "bp_diastolic": 80,
+    "hr": null,
+    "rr": null,
+    "spo2": null,
+    "temp": 37,
+    "gcs": null,
+    "pain_scale_0_10": null
+  },
+  "exam": "Patient exhibits signs of distress and inability to breathe properly.",
+  "interventions": [
+    "Recommended to go to the hospital for rest."
+  ],
+  "severity": "High",
+  "recommendation": "Transfer to hospital",
+  "reasoning": "Patient shows signs of severe distress and inability to breathe properly.",
+  "form_en": "==== PATIENT INFO ====\nName              : N/A\nGender            : N/A\nAge               : N/A\nNationality       : Non-Saudi\nID                : N/A\n\n==== SCENE DETAILS ====\nDate              : 2023-10-01\nTime              : 00:00\nCaller Phone      : N/A\nLocation          : N/A\nCase Code         : N/A\nCase Type         : Medical\nMechanism         : N/A\n\n==== CHIEF COMPLAINT ====\nHeadache, back pain, inability to move arms, suffocation.\n\n==== HISTORY (SAMPLE) ====\nOnset             : N/A\nDuration          : N/A\nAssociated Sx     : suffocating, can't eat or drink, can't sleep or breathe\nAllergies         : N/A\nMedications       : N/A\nPast History      : N/A\nLast Meal         : N/A\nEvents            : N/A\n\n==== VITALS ====\nBP (Sys/Dia)      : 126/80\nHeart Rate        : N/A\nResp Rate         : N/A\nSpO2              : N/A\nTemperature       : 37°C\nGCS               : N/A\nPain (0-10)       : N/A\n\n==== EXAM FINDINGS ====\nPatient exhibits signs of distress and inability to breathe properly.\n\n==== INTERVENTIONS ====\n- Recommended to go to the hospital for rest.\n\n==== SEVERITY & ACTION ====\nSeverity          : High\nRecommendation    : Transfer to hospital\nReasoning         : Patient shows signs of severe distress and inability to breathe properly."
+}

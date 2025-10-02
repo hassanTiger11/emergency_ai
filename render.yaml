@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: paramedic-assistant
+    env: docker
+    region: oregon
+    plan: starter
+    healthCheckPath: /api/status
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+

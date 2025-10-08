@@ -7,11 +7,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies for PDF generation
-RUN apt-get update && apt-get install -y \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
-    && rm -rf /var/lib/apt/lists/*
+# No system dependencies needed for basic PDF generation
 
 # Copy requirements first for better caching
 COPY requirements.txt .

@@ -1,233 +1,46 @@
-import os
-import json
-import shutil
-from pathlib import Path
-from datetime import datetime
-
-from dotenv import load_dotenv
-from openai import OpenAI
-from fastapi import FastAPI, HTTPException, File, UploadFile, Form
-from fastapi.responses import HTMLResponse, JSONResponse
+"""
+Paramedic Assistant API
+Main FastAPI application with restructured imports
+"""
+from fastapi import FastAPI, File, UploadFile, Form
+from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
-# ============ CONFIG ============
-OUTPUT_DIR = Path("output")
-OUTPUT_DIR.mkdir(exist_ok=True)
+from endpoints.config import CORS_ORIGINS, CORS_ALLOW_CREDENTIALS, CORS_ALLOW_METHODS, CORS_ALLOW_HEADERS
+from endpoints.routes import root, upload_audio, health_check, generate_pdf_report
 
-MODEL_TRANSCRIBE = "whisper-1"
-MODEL_CHAT = "gpt-4o-mini"
-# ===============================
-
-load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
+# Initialize FastAPI app
 app = FastAPI(title="Paramedic Assistant API")
+
+# Request model for PDF generation
+class AnalysisData(BaseModel):
+    session_id: str
+    analysis: dict
+
+# Mount static files
+app.mount("/css", StaticFiles(directory="static/css"), name="css")
+app.mount("/js", StaticFiles(directory="static/js"), name="js")
 
 # Enable CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=CORS_ORIGINS,
+    allow_credentials=CORS_ALLOW_CREDENTIALS,
+    allow_methods=CORS_ALLOW_METHODS,
+    allow_headers=CORS_ALLOW_HEADERS,
 )
-
-
-# ---------- Helper Functions ----------
-def transcribe_with_whisper(wav_path: Path) -> str:
-    """Transcribe audio file using OpenAI Whisper"""
-    with open(wav_path, "rb") as f:
-        resp = client.audio.translations.create(
-            model=MODEL_TRANSCRIBE,
-            file=f
-        )
-    return resp.text or ""
-
-
-def strip_json_fences(text: str) -> str:
-    t = text.strip()
-    if t.startswith("```"):
-        t = t.lstrip("`")
-        if t.lower().startswith("json"):
-            t = t[4:]
-        t = t.rstrip("`").strip()
-    return t
-
-
-def extract_json_loose(text: str) -> str:
-    start = text.find("{")
-    end = text.rfind("}")
-    if start != -1 and end != -1 and end > start:
-        return text[start:end+1]
-    return text
-
-
-def build_prompt(transcript: str) -> str:
-    return f"""
-You are a paramedic assistant for field triage in Makkah.
-Read the conversation transcript (English).
-Extract structured data to fill the official EMS report and provide triage severity + action.
-
-Return ONLY valid JSON with this schema:
-
-{{
-  "patient": {{
-    "name": "string|null",
-    "gender": "Male|Female|null",
-    "age": "string|null",
-    "nationality": "Saudi|Non-Saudi|null",
-    "ID": "string|null"
-  }},
-  "scene": {{
-    "date": "YYYY-MM-DD",
-    "time": "HH:MM",
-    "caller_phone": "string|null",
-    "location": "string|null",
-    "case_code": "string|null",
-    "case_type": "Medical|Trauma|null",
-    "mechanism": "Fall|Traffic Accident|Stab|Burn|Choking|Other|null"
-  }},
-  "chief_complaint": "string",
-  "history": {{
-    "onset": "string|null",
-    "duration": "string|null",
-    "associated_symptoms": ["string", "..."],
-    "allergies": "string|null",
-    "medications": "string|null",
-    "past_history": "string|null",
-    "last_meal": "string|null",
-    "events": "string|null"
-  }},
-  "vitals": {{
-    "bp_systolic": "number|null",
-    "bp_diastolic": "number|null",
-    "hr": "number|null",
-    "rr": "number|null",
-    "spo2": "number|null",
-    "temp": "number|null",
-    "gcs": "number|null",
-    "pain_scale_0_10": "number|null"
-  }},
-  "exam": "string|null",
-  "interventions": ["string", "..."],
-  "severity": "Very High|High|Medium|Low|Very Low",
-  "recommendation": "Transfer to hospital|Treat on site",
-  "reasoning": "Short rationale in English",
-  "form_en": "A structured, sectioned, aligned English report as plain text. Use the exact section headers below."
-}}
-
-When constructing "form_en", use EXACTLY these section headers and colon-aligned fields:
-
-==== PATIENT INFO ====
-Name              : <value or N/A>
-Gender            : <value or N/A>
-Age               : <value or N/A>
-Nationality       : <value or N/A>
-ID                : <value or N/A>
-
-==== SCENE DETAILS ====
-Date              : <YYYY-MM-DD or N/A>
-Time              : <HH:MM or N/A>
-Caller Phone      : <value or N/A>
-Location          : <value or N/A>
-Case Code         : <value or N/A>
-Case Type         : <Medical|Trauma or N/A>
-Mechanism         : <value or N/A>
-
-==== CHIEF COMPLAINT ====
-<one concise line>
-
-==== HISTORY (SAMPLE) ====
-Onset             : <value or N/A>
-Duration          : <value or N/A>
-Associated Sx     : <comma-separated or N/A>
-Allergies         : <value or N/A>
-Medications       : <value or N/A>
-Past History      : <value or N/A>
-Last Meal         : <value or N/A>
-Events            : <value or N/A>
-
-==== VITALS ====
-BP (Sys/Dia)      : <120/80 or N/A>
-Heart Rate        : <value or N/A>
-Resp Rate         : <value or N/A>
-SpO2              : <value% or N/A>
-Temperature       : <value°C or N/A>
-GCS               : <value or N/A>
-Pain (0-10)       : <value or N/A>
-
-==== EXAM FINDINGS ====
-<concise bullet-like text or N/A>
-
-==== INTERVENTIONS ====
-- <item or N/A>
-
-==== SEVERITY & ACTION ====
-Severity          : <Very High|High|Medium|Low|Very Low>
-Recommendation    : <Transfer to hospital|Treat on site>
-Reasoning         : <one concise English line>
-
-Rules:
-- If data is missing, use N/A or null (in JSON), but do not invent facts.
-- High-risk red flags ⇒ Very High/High & Transfer.
-- Stable minor issues ⇒ Treat on site if safe.
-
-Transcript:
-\"\"\"{transcript}\"\"\"
-"""
-
-
-def analyze_transcript(transcript: str) -> dict:
-    prompt = build_prompt(transcript)
-    resp = client.chat.completions.create(
-        model=MODEL_CHAT,
-        temperature=0,
-        messages=[
-            {"role": "system", "content": "Return ONLY valid JSON. No prose."},
-            {"role": "user", "content": prompt}
-        ]
-    )
-    raw = resp.choices[0].message.content or ""
-    text = strip_json_fences(raw)
-
-    try:
-        return json.loads(text)
-    except Exception:
-        try_text = extract_json_loose(text)
-        try:
-            return json.loads(try_text)
-        except Exception:
-            return {"error": "Could not parse JSON", "raw": raw}
-
-
-def timestamp_yyyymmddhhmm() -> str:
-    return datetime.now().strftime("%Y%m%d%H%M%S")
-
-
-def save_outputs(transcript: str, analysis: dict, session_id: str, ts: str):
-    """Save outputs with session ID prefix for tracking"""
-    short_session = session_id[:8]
-    
-    (OUTPUT_DIR / f"{short_session}_{ts}_transcript.txt").write_text(transcript, encoding="utf-8")
-    (OUTPUT_DIR / f"{short_session}_{ts}_analysis.json").write_text(
-        json.dumps(analysis, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-    if isinstance(analysis, dict) and analysis.get("form_en"):
-        (OUTPUT_DIR / f"{short_session}_{ts}_report.txt").write_text(analysis["form_en"], encoding="utf-8")
 
 
 # ---------- API Endpoints ----------
 @app.get("/")
-async def root():
+async def get_root():
     """Serve the main HTML page"""
-    html_file = Path("static/index.html")
-    if html_file.exists():
-        return HTMLResponse(content=html_file.read_text(encoding='utf-8'))
-    return {"message": "Paramedic Assistant API is running"}
+    return await root()
 
 
 @app.post("/api/upload-audio")
-async def upload_audio(
+async def post_upload_audio(
     session_id: str = Form(...),
     audio_file: UploadFile = File(...)
 ):
@@ -235,50 +48,23 @@ async def upload_audio(
     Accept audio file from browser and process it.
     Browser records audio using MediaRecorder API and uploads it here.
     """
-    try:
-        # Generate timestamp
-        ts = timestamp_yyyymmddhhmm()
-        short_session = session_id[:8]
-        
-        # Save uploaded audio file
-        wav_path = OUTPUT_DIR / f"{short_session}_{ts}_recording.wav"
-        with wav_path.open("wb") as buffer:
-            shutil.copyfileobj(audio_file.file, buffer)
-        
-        print(f"💾 Saved audio: {wav_path.name}")
-        
-        # Transcribe
-        print(f"🔄 Transcribing audio for session: {short_session}...")
-        transcript = transcribe_with_whisper(wav_path)
-        
-        # Analyze
-        print(f"🧠 Analyzing transcript for session: {short_session}...")
-        analysis = analyze_transcript(transcript)
-        
-        # Save outputs
-        save_outputs(transcript, analysis, session_id, ts)
-        print(f"✅ Completed processing for session: {short_session}")
-        
-        return JSONResponse(content={
-            "status": "completed",
-            "session_id": session_id,
-            "timestamp": ts,
-            "transcript": transcript,
-            "analysis": analysis
-        })
-        
-    except Exception as e:
-        print(f"❌ Error processing: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Processing failed: {str(e)}")
+    return await upload_audio(session_id=session_id, audio_file=audio_file)
 
 
 @app.get("/api/health")
-async def health_check():
+async def get_health_check():
     """Health check endpoint"""
-    return {"status": "ok", "service": "Paramedic Assistant API"}
+    return await health_check()
+
+
+@app.post("/api/generate-pdf")
+async def post_generate_pdf(data: AnalysisData):
+    """
+    Generate and download a professional PDF report
+    """
+    return await generate_pdf_report(data.dict())
 
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
-

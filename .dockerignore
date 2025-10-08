@@ -21,7 +21,7 @@ ENV/
 
 # Output files (will be created in container)
 output/
-
+.output/
 # Documentation
 README.md
 

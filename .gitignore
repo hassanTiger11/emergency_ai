@@ -17,9 +17,13 @@ ENV/
 *.swp
 *.swo
 
-# Output files (optional - uncomment to ignore)
-# output/
+# Output files
+.output/
+
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Output files
+.output/

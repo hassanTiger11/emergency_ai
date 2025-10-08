@@ -1,0 +1,758 @@
+/**
+ * Professional Report and Print Styles
+ * Makkah Emergency Medical Services
+ */
+
+/* ========== PROFESSIONAL REPORT STYLES ========== */
+.professional-report {
+    max-width: 100%;
+    margin: 0 auto;
+    font-family: 'Times New Roman', serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Report Header Styles */
+.report-header-section {
+    text-align: center;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.report-title {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 5px;
+}
+
+.report-subtitle {
+    font-size: 1.1em;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.report-info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+
+.report-label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.report-value {
+    flex: 1;
+    text-align: right;
+}
+
+/* Section Styles */
+.report-section {
+    margin-bottom: 25px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.section-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 20px;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.section-content {
+    padding: 20px;
+}
+
+/* Demographics Grid */
+.demographics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.demo-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.demo-label, .demo-value {
+    font-size: 0.95em;
+}
+
+.demo-label {
+    font-weight: bold;
+    color: #555;
+}
+
+/* Scene Grid */
+.scene-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.scene-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.scene-label, .scene-value {
+    font-size: 0.95em;
+}
+
+.scene-label {
+    font-weight: bold;
+    color: #555;
+}
+
+/* Chief Complaint */
+.chief-complaint-box {
+    background: #f8f9fa;
+    padding: 15px;
+    border-left: 4px solid #667eea;
+    border-radius: 4px;
+}
+
+.complaint-text {
+    font-style: italic;
+    font-size: 1.1em;
+}
+
+/* History Details */
+.history-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.history-label, .history-value {
+    font-size: 0.95em;
+}
+
+.history-label {
+    font-weight: bold;
+    color: #555;
+}
+
+/* Medical History Grid */
+.medical-history-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.medical-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.medical-label, .medical-value {
+    font-size: 0.95em;
+}
+
+.medical-label {
+    font-weight: bold;
+    color: #555;
+}
+
+/* Vitals Table */
+.vitals-table {
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.vital-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-bottom: 1px solid #ddd;
+}
+
+.vital-row:last-child {
+    border-bottom: none;
+}
+
+.vital-cell {
+    padding: 15px;
+    border-right: 1px solid #ddd;
+    text-align: center;
+}
+
+.vital-cell:last-child {
+    border-right: none;
+}
+
+.vital-label {
+    display: block;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.vital-value {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Physical Exam */
+.exam-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.exam-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.exam-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.exam-label, .exam-value {
+    font-size: 0.95em;
+}
+
+.exam-label {
+    font-weight: bold;
+    color: #555;
+}
+
+/* Treatment Grid */
+.treatment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.treatment-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.treatment-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.treatment-label, .treatment-value {
+    font-size: 0.95em;
+}
+
+.treatment-label {
+    font-weight: bold;
+    color: #555;
+}
+
+/* Assessment Grid */
+.assessment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.assessment-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.assessment-label, .assessment-value {
+    font-size: 0.95em;
+}
+
+.assessment-label {
+    font-weight: bold;
+    color: #555;
+}
+
+/* Signature Section */
+.signature-section {
+    border-top: 3px solid #667eea;
+    margin-top: 30px;
+}
+
+.signature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.signature-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.signature-label, .signature-value {
+    font-size: 1em;
+}
+
+.signature-label {
+    font-weight: bold;
+    color: #555;
+}
+
+.signature-value {
+    min-width: 200px;
+    text-align: center;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+}
+
+.narrative-text {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #667eea;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #555;
+}
+
+.editable-field {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 3px;
+    padding: 2px 4px;
+}
+
+.editable-field:hover {
+    background: #f0f8ff;
+    border: 1px dashed #667eea;
+}
+
+.edit-mode .editable-field {
+    background: rgba(102, 126, 234, 0.1);
+    border: 1px solid #667eea;
+}
+
+/* ========== PROFESSIONAL REPORT SECTION STYLES ========== */
+.professional-report-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #667eea;
+}
+
+.professional-report-section .section-header {
+    font-size: 18px;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 20px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ========== PRINT STYLES ========== */
+@media print {
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    body {
+        background: white !important;
+        color: black !important;
+        font-size: 12pt;
+        line-height: 1.4;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .header {
+        text-align: center;
+        color: black !important;
+        margin-bottom: 20px;
+        page-break-after: avoid;
+    }
+
+    .header h1 {
+        font-size: 18pt;
+        margin-bottom: 5px;
+        color: black !important;
+    }
+
+    .header p {
+        font-size: 10pt;
+        color: #666 !important;
+    }
+
+    .session-info {
+        background: #f5f5f5 !important;
+        color: black !important;
+        border: 1px solid #ddd;
+        padding: 8px;
+        border-radius: 5px;
+        font-size: 9pt;
+        margin-top: 10px;
+    }
+
+    .card {
+        background: white !important;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 0;
+        box-shadow: none;
+    }
+
+    .recording-section {
+        display: none !important;
+    }
+
+    .report-section {
+        display: block !important;
+    }
+
+    .report-header {
+        border-bottom: 2px solid #333;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        page-break-after: avoid;
+    }
+
+    .report-header h2 {
+        color: black !important;
+        font-size: 16pt;
+        margin: 0;
+    }
+
+    .severity-badge {
+        background: #333 !important;
+        color: white !important;
+        padding: 5px 10px;
+        border-radius: 3px;
+        font-size: 10pt;
+        font-weight: bold;
+    }
+
+    .summary-grid {
+        display: block;
+        margin-bottom: 20px;
+        page-break-after: avoid;
+    }
+
+    .summary-card {
+        background: #f9f9f9 !important;
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 3px;
+        page-break-inside: avoid;
+    }
+
+    .summary-card h3 {
+        color: black !important;
+        font-size: 11pt;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .summary-card p {
+        font-size: 10pt;
+        color: black !important;
+        margin: 0;
+    }
+
+    .professional-report {
+        font-family: 'Times New Roman', serif !important;
+        line-height: 1.4;
+        color: black !important;
+    }
+
+    .report-header-section {
+        text-align: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #333;
+        page-break-after: avoid;
+    }
+
+    .report-title {
+        font-size: 18pt;
+        font-weight: bold;
+        color: black !important;
+        margin-bottom: 5px;
+    }
+
+    .report-subtitle {
+        font-size: 12pt;
+        color: #666 !important;
+        margin-bottom: 10px;
+    }
+
+    .report-meta {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        font-size: 10pt;
+        color: #666 !important;
+    }
+
+    .report-section {
+        margin-bottom: 20px;
+        page-break-inside: avoid;
+        border: 1px solid #ddd !important;
+        border-radius: 0 !important;
+    }
+
+    .section-header {
+        font-size: 11pt;
+        font-weight: bold;
+        color: black !important;
+        background: #f0f0f0 !important;
+        padding: 6px 12px;
+        border-left: 3px solid #333;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .section-content {
+        padding: 0 12px;
+        color: black !important;
+    }
+
+    /* All report text elements should be black */
+    .demo-label, .demo-value,
+    .scene-label, .scene-value,
+    .medical-label, .medical-value,
+    .exam-label, .exam-value,
+    .treatment-label, .treatment-value,
+    .signature-label, .signature-value {
+        color: black !important;
+    }
+
+    /* Vitals table print styles */
+    .vitals-table {
+        border: 2px solid #333 !important;
+        border-radius: 0 !important;
+    }
+
+    .vital-row {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        border-bottom: 1px solid #333 !important;
+    }
+
+    .vital-cell {
+        padding: 10px !important;
+        border-right: 1px solid #333 !important;
+        text-align: center !important;
+    }
+
+    .vital-label {
+        color: black !important;
+        font-weight: bold !important;
+        display: block !important;
+    }
+
+    .vital-value {
+        color: black !important;
+        font-size: 11pt !important;
+    }
+
+    .info-grid, .history-grid, .vitals-grid {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .info-item, .history-item, .vital-item, .assessment-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 6px 0;
+        border-bottom: 1px dotted #ccc;
+        background: transparent !important;
+    }
+
+    .info-label, .history-label, .vital-label, .assessment-label {
+        font-weight: bold;
+        min-width: 120px;
+        color: black !important;
+        font-size: 10pt;
+    }
+
+    .info-value, .history-value, .vital-value, .assessment-value {
+        flex: 1;
+        color: black !important;
+        font-size: 10pt;
+        margin-left: 10px;
+    }
+
+    .narrative-text {
+        background: #f8f8f8 !important;
+        padding: 12px;
+        border-radius: 3px;
+        border-left: 3px solid #333;
+        font-size: 10pt;
+        line-height: 1.4;
+        color: black !important;
+    }
+
+    .symptoms-list {
+        margin-top: 8px;
+    }
+
+    .symptom-tag {
+        background: #e0e0e0 !important;
+        color: black !important;
+        padding: 2px 6px;
+        border-radius: 8px;
+        font-size: 9pt;
+        margin-right: 5px;
+        margin-bottom: 3px;
+        display: inline-block;
+    }
+
+    .interventions-list {
+        margin-top: 0;
+    }
+
+    .intervention-item {
+        background: #f5f5f5 !important;
+        color: black !important;
+        padding: 6px 10px;
+        border-radius: 3px;
+        margin-bottom: 5px;
+        border-left: 3px solid #333;
+    }
+
+    .intervention-number {
+        font-weight: bold;
+        color: black !important;
+        margin-right: 8px;
+        min-width: 15px;
+    }
+
+    .intervention-text {
+        flex: 1;
+        color: black !important;
+        font-size: 10pt;
+    }
+
+    .transcript-section {
+        background: #f9f9f9 !important;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        margin-top: 15px;
+        padding: 15px;
+        page-break-inside: avoid;
+    }
+
+    .transcript-section h3 {
+        color: black !important;
+        font-size: 12pt;
+        margin-bottom: 8px;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 5px;
+    }
+
+    .transcript-section p {
+        color: black !important;
+        font-size: 10pt;
+        line-height: 1.4;
+        margin: 0;
+    }
+
+    .action-buttons {
+        display: none !important;
+    }
+
+    .edit-mode-controls {
+        display: none !important;
+    }
+
+    .validation-message {
+        display: none !important;
+    }
+
+    /* Hide widgets when printing - only show professional report */
+    .widgets-container {
+        display: none !important;
+    }
+
+    .widget-section {
+        display: none !important;
+    }
+
+    /* Ensure professional report is visible when printing */
+    .professional-report-section {
+        display: block !important;
+        border-top: none !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    .professional-report-section .section-header {
+        display: none !important; /* Hide the "DETAILED MEDICAL REPORT" header */
+    }
+
+    .professional-report {
+        display: block !important;
+    }
+
+    /* Page breaks */
+    .widget-section:nth-child(3n) {
+        page-break-after: auto;
+    }
+
+    .report-header {
+        page-break-after: avoid;
+    }
+
+    .summary-grid {
+        page-break-after: avoid;
+    }
+
+    /* Print header */
+    @page {
+        margin: 1in;
+        @top-center {
+            content: "Makkah EMS - Medical Report";
+            font-size: 10pt;
+            color: #666;
+        }
+        @bottom-center {
+            content: "Page " counter(page) " of " counter(pages);
+            font-size: 9pt;
+            color: #666;
+        }
+    }
+}
+

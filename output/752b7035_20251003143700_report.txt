@@ -1,0 +1,49 @@
+==== PATIENT INFO ====
+Name              : Baha
+Gender            : Male
+Age               : N/A
+Nationality       : Saudi
+ID                : N/A
+
+==== SCENE DETAILS ====
+Date              : N/A
+Time              : N/A
+Caller Phone      : N/A
+Location          : N/A
+Case Code         : N/A
+Case Type         : Medical
+Mechanism         : Other
+
+==== CHIEF COMPLAINT ====
+Seizures and severe relapse
+
+==== HISTORY (SAMPLE) ====
+Onset             : In the evening
+Duration          : 1 hour
+Associated Sx     : migraines, lack of sleep
+Allergies         : sense of taste
+Medications       : N/A
+Past History      : N/A
+Last Meal         : N/A
+Events            : N/A
+
+==== VITALS ====
+BP (Sys/Dia)      : 120/70
+Heart Rate        : N/A
+Resp Rate         : N/A
+SpO2              : N/A
+Temperature       : N/A
+GCS               : N/A
+Pain (0-10)       : N/A
+
+==== EXAM FINDINGS ====
+N/A
+
+==== INTERVENTIONS ====
+- Monitor vitals
+- Provide reassurance
+
+==== SEVERITY & ACTION ====
+Severity          : High
+Recommendation    : Transfer to hospital
+Reasoning         : Patient has a history of seizures and severe relapse, indicating potential risk.

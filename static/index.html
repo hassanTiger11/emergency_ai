@@ -303,6 +303,826 @@
             margin: 20px 0;
             text-align: center;
         }
+
+        /* ========== WIDGET STYLES ========== */
+        .widgets-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .widget-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+        }
+
+        .widget-section h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .widget-section h3::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: #667eea;
+            border-radius: 2px;
+        }
+
+        .widget-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .widget-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+            transition: all 0.2s ease;
+        }
+
+        .widget-item:hover {
+            background: #e9ecef;
+            transform: translateX(3px);
+        }
+
+        .widget-label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .widget-value {
+            color: #212529;
+            font-weight: 500;
+            font-size: 1em;
+            text-align: right;
+            max-width: 60%;
+            word-break: break-word;
+        }
+
+        .widget-value.null {
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .widget-value.highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .vitals-widget {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .vitals-widget .widget-item {
+            background: rgba(255,255,255,0.2);
+            border-left-color: rgba(255,255,255,0.5);
+        }
+
+        .vitals-widget .widget-item:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .vitals-widget .widget-label {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .vitals-widget .widget-value {
+            color: white;
+        }
+
+        .interventions-widget .widget-item {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-left-color: rgba(255,255,255,0.5);
+        }
+
+        .interventions-widget .widget-item:hover {
+            background: linear-gradient(135deg, #3d8bfe 0%, #00d4fe 100%);
+        }
+
+        .interventions-widget .widget-label {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .interventions-widget .widget-value {
+            color: white;
+        }
+
+        .severity-widget {
+            background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+            color: white;
+        }
+
+        .severity-widget .widget-item {
+            background: rgba(255,255,255,0.2);
+            border-left-color: rgba(255,255,255,0.5);
+        }
+
+        .severity-widget .widget-item:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .severity-widget .widget-label {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .severity-widget .widget-value {
+            color: white;
+        }
+
+        .history-widget .widget-item {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        .history-widget .widget-item:hover {
+            background: linear-gradient(135deg, #ffe4b5 0%, #fba085 100%);
+        }
+
+        .symptoms-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .symptom-tag {
+            background: #667eea;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .interventions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .intervention-item {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: white;
+            font-weight: 500;
+        }
+
+        /* ========== EDIT MODE STYLES ========== */
+        .edit-mode-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .edit-mode-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .edit-mode-indicator::before {
+            content: '✏️';
+            font-size: 1.2em;
+        }
+
+        .edit-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-edit {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .btn-save {
+            background: #2ed573;
+            color: white;
+            border: 2px solid #2ed573;
+        }
+
+        .btn-save:hover {
+            background: #26c965;
+            border-color: #26c965;
+        }
+
+        .btn-cancel {
+            background: #ff4757;
+            color: white;
+            border: 2px solid #ff4757;
+        }
+
+        .btn-cancel:hover {
+            background: #ff3742;
+            border-color: #ff3742;
+        }
+
+        .widget-value.editable {
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            padding: 5px 8px;
+            font-family: inherit;
+            font-size: inherit;
+            min-width: 100px;
+            transition: all 0.2s ease;
+        }
+
+        .widget-value.editable:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+        }
+
+        .widget-value.editable.invalid {
+            border-color: #ff4757;
+            background: #ffe6e6;
+        }
+
+        .widget-section.editing {
+            border-left-color: #4facfe;
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.2);
+        }
+
+        .validation-message {
+            color: #ff4757;
+            font-size: 0.8em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .validation-message.show {
+            display: block;
+        }
+
+        .edit-mode .widget-item {
+            border-left-color: #4facfe;
+        }
+
+        .edit-mode .widget-section h3::before {
+            background: #4facfe;
+        }
+
+        /* ========== PROFESSIONAL REPORT STYLES ========== */
+        .professional-report {
+            max-width: 100%;
+            margin: 0 auto;
+            font-family: 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .report-header-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #333;
+        }
+
+        .report-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .report-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .report-meta {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .report-date, .report-time {
+            font-weight: 500;
+        }
+
+        .report-severity {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .report-section {
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+        }
+
+        .section-header {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            background: #f5f5f5;
+            padding: 8px 15px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-content {
+            padding: 0 15px;
+        }
+
+        .info-grid, .history-grid, .vitals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .info-item, .history-item, .vital-item, .assessment-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 8px 0;
+            border-bottom: 1px dotted #ddd;
+        }
+
+        .info-label, .history-label, .vital-label, .assessment-label {
+            font-weight: bold;
+            min-width: 140px;
+            color: #333;
+            font-size: 13px;
+        }
+
+        .info-value, .history-value, .vital-value, .assessment-value {
+            flex: 1;
+            color: #555;
+            font-size: 13px;
+            margin-left: 10px;
+        }
+
+        .narrative-text {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .symptoms-section {
+            margin-top: 15px;
+        }
+
+        .symptoms-label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .symptoms-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .symptom-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            border: 1px solid #bbdefb;
+        }
+
+        .medical-history {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .interventions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .intervention-item {
+            display: flex;
+            align-items: flex-start;
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+
+        .intervention-number {
+            font-weight: bold;
+            color: #667eea;
+            margin-right: 10px;
+            min-width: 20px;
+        }
+
+        .intervention-text {
+            flex: 1;
+            color: #555;
+            font-size: 13px;
+        }
+
+        .editable-field {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 3px;
+            padding: 2px 4px;
+        }
+
+        .editable-field:hover {
+            background: #f0f8ff;
+            border: 1px dashed #667eea;
+        }
+
+        .edit-mode .editable-field {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid #667eea;
+        }
+
+        /* ========== PROFESSIONAL REPORT SECTION STYLES ========== */
+        .professional-report-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #667eea;
+        }
+
+        .professional-report-section .section-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ========== PRINT STYLES ========== */
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            body {
+                background: white !important;
+                color: black !important;
+                font-size: 12pt;
+                line-height: 1.4;
+                margin: 0;
+                padding: 20px;
+            }
+
+            .container {
+                max-width: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .header {
+                text-align: center;
+                color: black !important;
+                margin-bottom: 20px;
+                page-break-after: avoid;
+            }
+
+            .header h1 {
+                font-size: 18pt;
+                margin-bottom: 5px;
+                color: black !important;
+            }
+
+            .header p {
+                font-size: 10pt;
+                color: #666 !important;
+            }
+
+            .session-info {
+                background: #f5f5f5 !important;
+                color: black !important;
+                border: 1px solid #ddd;
+                padding: 8px;
+                border-radius: 5px;
+                font-size: 9pt;
+                margin-top: 10px;
+            }
+
+            .card {
+                background: white !important;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                padding: 20px;
+                margin-bottom: 0;
+                box-shadow: none;
+            }
+
+            .recording-section {
+                display: none !important;
+            }
+
+            .report-section {
+                display: block !important;
+            }
+
+            .report-header {
+                border-bottom: 2px solid #333;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                page-break-after: avoid;
+            }
+
+            .report-header h2 {
+                color: black !important;
+                font-size: 16pt;
+                margin: 0;
+            }
+
+            .severity-badge {
+                background: #333 !important;
+                color: white !important;
+                padding: 5px 10px;
+                border-radius: 3px;
+                font-size: 10pt;
+                font-weight: bold;
+            }
+
+            .summary-grid {
+                display: block;
+                margin-bottom: 20px;
+                page-break-after: avoid;
+            }
+
+            .summary-card {
+                background: #f9f9f9 !important;
+                border: 1px solid #ddd;
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 3px;
+                page-break-inside: avoid;
+            }
+
+            .summary-card h3 {
+                color: black !important;
+                font-size: 11pt;
+                margin-bottom: 5px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .summary-card p {
+                font-size: 10pt;
+                color: black !important;
+                margin: 0;
+            }
+
+            .professional-report {
+                font-family: 'Times New Roman', serif !important;
+                line-height: 1.4;
+                color: black !important;
+            }
+
+            .report-header-section {
+                text-align: center;
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #333;
+                page-break-after: avoid;
+            }
+
+            .report-title {
+                font-size: 18pt;
+                font-weight: bold;
+                color: black !important;
+                margin-bottom: 5px;
+            }
+
+            .report-subtitle {
+                font-size: 12pt;
+                color: #666 !important;
+                margin-bottom: 10px;
+            }
+
+            .report-meta {
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+                font-size: 10pt;
+                color: #666 !important;
+            }
+
+            .report-section {
+                margin-bottom: 20px;
+                page-break-inside: avoid;
+            }
+
+            .section-header {
+                font-size: 11pt;
+                font-weight: bold;
+                color: black !important;
+                background: #f0f0f0 !important;
+                padding: 6px 12px;
+                border-left: 3px solid #333;
+                margin-bottom: 10px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .section-content {
+                padding: 0 12px;
+            }
+
+            .info-grid, .history-grid, .vitals-grid {
+                display: block;
+                margin-bottom: 10px;
+            }
+
+            .info-item, .history-item, .vital-item, .assessment-item {
+                display: flex;
+                align-items: flex-start;
+                padding: 6px 0;
+                border-bottom: 1px dotted #ccc;
+                background: transparent !important;
+            }
+
+            .info-label, .history-label, .vital-label, .assessment-label {
+                font-weight: bold;
+                min-width: 120px;
+                color: black !important;
+                font-size: 10pt;
+            }
+
+            .info-value, .history-value, .vital-value, .assessment-value {
+                flex: 1;
+                color: black !important;
+                font-size: 10pt;
+                margin-left: 10px;
+            }
+
+            .narrative-text {
+                background: #f8f8f8 !important;
+                padding: 12px;
+                border-radius: 3px;
+                border-left: 3px solid #333;
+                font-size: 10pt;
+                line-height: 1.4;
+                color: black !important;
+            }
+
+            .symptoms-list {
+                margin-top: 8px;
+            }
+
+            .symptom-tag {
+                background: #e0e0e0 !important;
+                color: black !important;
+                padding: 2px 6px;
+                border-radius: 8px;
+                font-size: 9pt;
+                margin-right: 5px;
+                margin-bottom: 3px;
+                display: inline-block;
+            }
+
+            .interventions-list {
+                margin-top: 0;
+            }
+
+            .intervention-item {
+                background: #f5f5f5 !important;
+                color: black !important;
+                padding: 6px 10px;
+                border-radius: 3px;
+                margin-bottom: 5px;
+                border-left: 3px solid #333;
+            }
+
+            .intervention-number {
+                font-weight: bold;
+                color: black !important;
+                margin-right: 8px;
+                min-width: 15px;
+            }
+
+            .intervention-text {
+                flex: 1;
+                color: black !important;
+                font-size: 10pt;
+            }
+
+            .transcript-section {
+                background: #f9f9f9 !important;
+                border: 1px solid #ddd;
+                border-radius: 3px;
+                margin-top: 15px;
+                padding: 15px;
+                page-break-inside: avoid;
+            }
+
+            .transcript-section h3 {
+                color: black !important;
+                font-size: 12pt;
+                margin-bottom: 8px;
+                border-bottom: 1px solid #ccc;
+                padding-bottom: 5px;
+            }
+
+            .transcript-section p {
+                color: black !important;
+                font-size: 10pt;
+                line-height: 1.4;
+                margin: 0;
+            }
+
+            .action-buttons {
+                display: none !important;
+            }
+
+            .edit-mode-controls {
+                display: none !important;
+            }
+
+            .validation-message {
+                display: none !important;
+            }
+
+            /* Page breaks */
+            .widget-section:nth-child(3n) {
+                page-break-after: auto;
+            }
+
+            .report-header {
+                page-break-after: avoid;
+            }
+
+            .summary-grid {
+                page-break-after: avoid;
+            }
+
+            /* Print header */
+            @page {
+                margin: 1in;
+                @top-center {
+                    content: "Makkah EMS - Medical Report";
+                    font-size: 10pt;
+                    color: #666;
+                }
+                @bottom-center {
+                    content: "Page " counter(page) " of " counter(pages);
+                    font-size: 9pt;
+                    color: #666;
+                }
+            }
+        }
     </style>
 </head>
 <body>
@@ -350,6 +1170,457 @@
 
         const SESSION_ID = getOrCreateSessionId();
         document.getElementById('sessionDisplay').textContent = SESSION_ID.substring(0, 8) + '...';
+
+        // ========== EDIT MODE MANAGEMENT ==========
+        let isEditMode = false;
+        let originalAnalysis = null;
+        let editedAnalysis = null;
+
+        function toggleEditMode() {
+            if (!isEditMode) {
+                enterEditMode();
+            } else {
+                exitEditMode();
+            }
+        }
+
+        function enterEditMode() {
+            isEditMode = true;
+            editedAnalysis = JSON.parse(JSON.stringify(originalAnalysis)); // Deep copy
+            
+            // Update UI for both widgets and professional report
+            const widgetsContainer = document.querySelector('.widgets-container');
+            const professionalReport = document.querySelector('.professional-report');
+            
+            if (widgetsContainer) {
+                widgetsContainer.classList.add('edit-mode');
+            }
+            if (professionalReport) {
+                professionalReport.classList.add('edit-mode');
+            }
+            
+            makeWidgetsEditable();
+            
+            // Show edit controls
+            showEditControls();
+        }
+
+        function exitEditMode() {
+            isEditMode = false;
+            editedAnalysis = null;
+            
+            // Update UI for both widgets and professional report
+            const widgetsContainer = document.querySelector('.widgets-container');
+            const professionalReport = document.querySelector('.professional-report');
+            
+            if (widgetsContainer) {
+                widgetsContainer.classList.remove('edit-mode');
+            }
+            if (professionalReport) {
+                professionalReport.classList.remove('edit-mode');
+            }
+            
+            makeWidgetsReadOnly();
+            
+            // Hide edit controls
+            hideEditControls();
+        }
+
+        function makeWidgetsEditable() {
+            // Handle widget values
+            const widgetValues = document.querySelectorAll('.widget-value');
+            widgetValues.forEach(element => {
+                if (element.textContent && element.textContent !== 'N/A') {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'widget-value editable';
+                    input.value = element.textContent;
+                    input.dataset.originalValue = element.textContent;
+                    
+                    // Add validation based on field type
+                    addValidation(input, element);
+                    
+                    element.parentNode.replaceChild(input, element);
+                }
+            });
+
+            // Handle professional report fields
+            const editableFields = document.querySelectorAll('.editable-field');
+            editableFields.forEach(element => {
+                if (element.textContent && element.textContent !== 'N/A' && element.textContent !== 'Not provided' && element.textContent !== 'Not specified' && element.textContent !== 'Not measured' && element.textContent !== 'Not assessed') {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'editable-field editable';
+                    input.value = element.textContent;
+                    input.dataset.originalValue = element.textContent;
+                    input.dataset.field = element.dataset.field;
+                    
+                    // Add validation based on field type
+                    addValidation(input, element);
+                    
+                    element.parentNode.replaceChild(input, element);
+                }
+            });
+        }
+
+        function makeWidgetsReadOnly() {
+            // Handle widget values
+            const editableWidgetInputs = document.querySelectorAll('.widget-value.editable');
+            editableWidgetInputs.forEach(input => {
+                const span = document.createElement('span');
+                span.className = 'widget-value';
+                span.textContent = input.value;
+                input.parentNode.replaceChild(span, input);
+            });
+
+            // Handle professional report fields
+            const editableInputs = document.querySelectorAll('.editable-field.editable');
+            editableInputs.forEach(input => {
+                const span = document.createElement('span');
+                span.className = 'editable-field';
+                span.textContent = input.value;
+                span.dataset.field = input.dataset.field;
+                input.parentNode.replaceChild(span, input);
+            });
+        }
+
+        function addValidation(input, originalElement) {
+            const fieldPath = input.dataset.field || '';
+            const label = originalElement.parentNode.querySelector('.widget-label, .info-label, .history-label, .vital-label, .assessment-label')?.textContent.toLowerCase() || '';
+            
+            // Numeric validation for vitals
+            if (fieldPath.includes('vitals.hr') || label.includes('heart rate')) {
+                input.type = 'number';
+                input.min = '0';
+                input.max = '300';
+                input.addEventListener('input', () => validateNumeric(input, 0, 300));
+            } else if (fieldPath.includes('vitals.rr') || label.includes('respiratory rate')) {
+                input.type = 'number';
+                input.min = '0';
+                input.max = '60';
+                input.addEventListener('input', () => validateNumeric(input, 0, 60));
+            } else if (fieldPath.includes('vitals.spo2') || label.includes('spo2')) {
+                input.type = 'number';
+                input.min = '0';
+                input.max = '100';
+                input.addEventListener('input', () => validateNumeric(input, 0, 100));
+            } else if (fieldPath.includes('vitals.temp') || label.includes('temperature')) {
+                input.type = 'number';
+                input.min = '30';
+                input.max = '45';
+                input.step = '0.1';
+                input.addEventListener('input', () => validateNumeric(input, 30, 45));
+            } else if (fieldPath.includes('vitals.pain_scale_0_10') || label.includes('pain scale')) {
+                input.type = 'number';
+                input.min = '0';
+                input.max = '10';
+                input.addEventListener('input', () => validateNumeric(input, 0, 10));
+            } else if (fieldPath.includes('vitals.bp') || label.includes('blood pressure')) {
+                // Special handling for BP format (systolic/diastolic)
+                input.placeholder = 'e.g., 120/80';
+                input.addEventListener('input', () => validateBloodPressure(input));
+            }
+            
+            input.addEventListener('blur', () => validateField(input));
+        }
+
+        function validateNumeric(input, min, max) {
+            const value = parseFloat(input.value);
+            const isValid = !isNaN(value) && value >= min && value <= max;
+            
+            if (!isValid && input.value !== '') {
+                input.classList.add('invalid');
+                showValidationMessage(input, `Value must be between ${min} and ${max}`);
+            } else {
+                input.classList.remove('invalid');
+                hideValidationMessage(input);
+            }
+            
+            return isValid;
+        }
+
+        function validateBloodPressure(input) {
+            const value = input.value.trim();
+            const bpRegex = /^\d{1,3}\/\d{1,3}$/;
+            const isValid = bpRegex.test(value) || value === '';
+            
+            if (!isValid && value !== '') {
+                input.classList.add('invalid');
+                showValidationMessage(input, 'Format: systolic/diastolic (e.g., 120/80)');
+            } else {
+                input.classList.remove('invalid');
+                hideValidationMessage(input);
+            }
+            
+            return isValid;
+        }
+
+        function validateField(input) {
+            const fieldPath = input.dataset.field || '';
+            const label = input.closest('.widget-item, .info-item, .history-item, .vital-item, .assessment-item')?.querySelector('.widget-label, .info-label, .history-label, .vital-label, .assessment-label')?.textContent.toLowerCase() || '';
+            
+            if (fieldPath.includes('vitals.hr') || label.includes('heart rate')) {
+                return validateNumeric(input, 0, 300);
+            } else if (fieldPath.includes('vitals.rr') || label.includes('respiratory rate')) {
+                return validateNumeric(input, 0, 60);
+            } else if (fieldPath.includes('vitals.spo2') || label.includes('spo2')) {
+                return validateNumeric(input, 0, 100);
+            } else if (fieldPath.includes('vitals.temp') || label.includes('temperature')) {
+                return validateNumeric(input, 30, 45);
+            } else if (fieldPath.includes('vitals.pain_scale_0_10') || label.includes('pain scale')) {
+                return validateNumeric(input, 0, 10);
+            } else if (fieldPath.includes('vitals.bp') || label.includes('blood pressure')) {
+                return validateBloodPressure(input);
+            }
+            
+            return true; // Default: valid
+        }
+
+        function showValidationMessage(input, message) {
+            let messageEl = input.parentNode.querySelector('.validation-message');
+            if (!messageEl) {
+                messageEl = document.createElement('div');
+                messageEl.className = 'validation-message';
+                input.parentNode.appendChild(messageEl);
+            }
+            messageEl.textContent = message;
+            messageEl.classList.add('show');
+        }
+
+        function hideValidationMessage(input) {
+            const messageEl = input.parentNode.querySelector('.validation-message');
+            if (messageEl) {
+                messageEl.classList.remove('show');
+            }
+        }
+
+        function showEditControls() {
+            const reportHeader = document.querySelector('.report-header');
+            if (reportHeader && !document.querySelector('.edit-mode-controls')) {
+                const editControls = document.createElement('div');
+                editControls.className = 'edit-mode-controls';
+                editControls.innerHTML = `
+                    <div class="edit-mode-indicator">Edit Mode Active</div>
+                    <div class="edit-controls">
+                        <button class="btn-edit btn-save" onclick="saveChanges()">Save Changes</button>
+                        <button class="btn-edit btn-cancel" onclick="cancelChanges()">Cancel</button>
+                    </div>
+                `;
+                reportHeader.insertAdjacentElement('afterend', editControls);
+            }
+        }
+
+        function hideEditControls() {
+            const editControls = document.querySelector('.edit-mode-controls');
+            if (editControls) {
+                editControls.remove();
+            }
+        }
+
+        function saveChanges() {
+            // Validate all fields
+            const editableInputs = document.querySelectorAll('.editable-field.editable, .widget-value.editable');
+            let allValid = true;
+            
+            editableInputs.forEach(input => {
+                if (!validateField(input)) {
+                    allValid = false;
+                }
+            });
+            
+            if (!allValid) {
+                alert('Please fix validation errors before saving.');
+                return;
+            }
+            
+            // Update the analysis object with edited values
+            updateAnalysisFromInputs();
+            
+            // Exit edit mode
+            exitEditMode();
+            
+            // Show success message
+            statusText.textContent = '✅ Changes saved successfully!';
+            setTimeout(() => {
+                statusText.textContent = 'Click the button to begin';
+            }, 3000);
+        }
+
+        function cancelChanges() {
+            // Restore original values
+            const editableInputs = document.querySelectorAll('.editable-field.editable, .widget-value.editable');
+            editableInputs.forEach(input => {
+                input.value = input.dataset.originalValue;
+                input.classList.remove('invalid');
+                hideValidationMessage(input);
+            });
+            
+            // Exit edit mode
+            exitEditMode();
+            
+            statusText.textContent = 'Changes cancelled';
+            setTimeout(() => {
+                statusText.textContent = 'Click the button to begin';
+            }, 2000);
+        }
+
+        function updateAnalysisFromInputs() {
+            if (!editedAnalysis) return;
+            
+            // Handle professional report fields
+            const editableInputs = document.querySelectorAll('.editable-field.editable');
+            editableInputs.forEach(input => {
+                const fieldPath = input.dataset.field;
+                const value = input.value.trim();
+                
+                if (!fieldPath) return;
+                
+                // Parse field path and update the appropriate field
+                const pathParts = fieldPath.split('.');
+                
+                if (pathParts.length === 2) {
+                    const [section, field] = pathParts;
+                    
+                    if (section === 'patient' && editedAnalysis.patient) {
+                        editedAnalysis.patient[field] = value || null;
+                    } else if (section === 'scene' && editedAnalysis.scene) {
+                        editedAnalysis.scene[field] = value || null;
+                    } else if (section === 'history' && editedAnalysis.history) {
+                        editedAnalysis.history[field] = value || null;
+                    } else if (section === 'vitals' && editedAnalysis.vitals) {
+                        if (field === 'bp' && value.includes('/')) {
+                            const [systolic, diastolic] = value.split('/');
+                            editedAnalysis.vitals.bp_systolic = systolic || null;
+                            editedAnalysis.vitals.bp_diastolic = diastolic || null;
+                        } else if (['hr', 'rr', 'spo2', 'pain_scale_0_10'].includes(field)) {
+                            editedAnalysis.vitals[field] = value ? parseInt(value) : null;
+                        } else if (field === 'temp') {
+                            editedAnalysis.vitals[field] = value ? parseFloat(value) : null;
+                        } else {
+                            editedAnalysis.vitals[field] = value || null;
+                        }
+                    }
+                } else if (pathParts.length === 1) {
+                    const field = pathParts[0];
+                    if (['chief_complaint', 'recommendation', 'severity', 'reasoning', 'exam'].includes(field)) {
+                        editedAnalysis[field] = value || null;
+                    }
+                }
+            });
+
+            // Handle widget values
+            const widgetInputs = document.querySelectorAll('.widget-value.editable');
+            widgetInputs.forEach(input => {
+                const label = input.closest('.widget-item')?.querySelector('.widget-label')?.textContent.toLowerCase() || '';
+                const value = input.value.trim();
+                
+                // Update the appropriate field in the analysis object
+                if (editedAnalysis.patient) {
+                    if (label.includes('name')) editedAnalysis.patient.name = value || null;
+                    if (label.includes('gender')) editedAnalysis.patient.gender = value || null;
+                    if (label.includes('age')) editedAnalysis.patient.age = value || null;
+                    if (label.includes('nationality')) editedAnalysis.patient.nationality = value || null;
+                    if (label.includes('id')) editedAnalysis.patient.ID = value || null;
+                }
+                
+                if (editedAnalysis.scene) {
+                    if (label.includes('date')) editedAnalysis.scene.date = value || null;
+                    if (label.includes('time')) editedAnalysis.scene.time = value || null;
+                    if (label.includes('caller phone')) editedAnalysis.scene.caller_phone = value || null;
+                    if (label.includes('location')) editedAnalysis.scene.location = value || null;
+                    if (label.includes('case code')) editedAnalysis.scene.case_code = value || null;
+                    if (label.includes('case type')) editedAnalysis.scene.case_type = value || null;
+                    if (label.includes('mechanism')) editedAnalysis.scene.mechanism = value || null;
+                }
+                
+                if (editedAnalysis.history) {
+                    if (label.includes('onset')) editedAnalysis.history.onset = value || null;
+                    if (label.includes('duration')) editedAnalysis.history.duration = value || null;
+                    if (label.includes('allergies')) editedAnalysis.history.allergies = value || null;
+                    if (label.includes('medications')) editedAnalysis.history.medications = value || null;
+                    if (label.includes('past history')) editedAnalysis.history.past_history = value || null;
+                    if (label.includes('last meal')) editedAnalysis.history.last_meal = value || null;
+                    if (label.includes('events')) editedAnalysis.history.events = value || null;
+                }
+                
+                if (editedAnalysis.vitals) {
+                    if (label.includes('blood pressure') || label.includes('bp')) {
+                        if (value.includes('/')) {
+                            const [systolic, diastolic] = value.split('/');
+                            editedAnalysis.vitals.bp_systolic = systolic || null;
+                            editedAnalysis.vitals.bp_diastolic = diastolic || null;
+                        }
+                    }
+                    if (label.includes('heart rate') || label.includes('hr')) {
+                        editedAnalysis.vitals.hr = value ? parseInt(value) : null;
+                    }
+                    if (label.includes('respiratory rate') || label.includes('rr')) {
+                        editedAnalysis.vitals.rr = value ? parseInt(value) : null;
+                    }
+                    if (label.includes('spo2') || label.includes('oxygen')) {
+                        editedAnalysis.vitals.spo2 = value ? parseInt(value) : null;
+                    }
+                    if (label.includes('temperature') || label.includes('temp')) {
+                        editedAnalysis.vitals.temp = value ? parseFloat(value) : null;
+                    }
+                    if (label.includes('gcs')) {
+                        editedAnalysis.vitals.gcs = value || null;
+                    }
+                    if (label.includes('pain scale')) {
+                        editedAnalysis.vitals.pain_scale_0_10 = value ? parseInt(value) : null;
+                    }
+                }
+                
+                if (label.includes('chief complaint')) {
+                    editedAnalysis.chief_complaint = value || null;
+                }
+                if (label.includes('recommendation')) {
+                    editedAnalysis.recommendation = value || null;
+                }
+                if (label.includes('severity')) {
+                    editedAnalysis.severity = value || null;
+                }
+                if (label.includes('reasoning')) {
+                    editedAnalysis.reasoning = value || null;
+                }
+            });
+            
+            // Update the original analysis
+            originalAnalysis = JSON.parse(JSON.stringify(editedAnalysis));
+        }
+
+        // ========== PRINT FUNCTIONALITY ==========
+        function printReport() {
+            // Ensure we're not in edit mode
+            if (isEditMode) {
+                alert('Please save or cancel your changes before printing.');
+                return;
+            }
+
+            // Add print-specific formatting
+            const reportSection = document.getElementById('reportSection');
+            if (!reportSection || reportSection.style.display === 'none') {
+                alert('No report to print. Please generate a report first.');
+                return;
+            }
+
+            // Add print timestamp
+            const timestamp = new Date().toLocaleString();
+            const sessionInfo = document.querySelector('.session-info');
+            if (sessionInfo) {
+                sessionInfo.innerHTML += `<br>Printed: ${timestamp}`;
+            }
+
+            // Trigger print dialog
+            window.print();
+
+            // Remove timestamp after printing (with delay)
+            setTimeout(() => {
+                if (sessionInfo) {
+                    sessionInfo.innerHTML = sessionInfo.innerHTML.replace(`<br>Printed: ${timestamp}`, '');
+                }
+            }, 1000);
+        }
 
         // ========== BROWSER RECORDING STATE ==========
         let mediaRecorder;
@@ -475,6 +1746,274 @@
             }
         }
 
+        // ========== PROFESSIONAL REPORT GENERATION ==========
+        function generateProfessionalReport(analysis) {
+            let reportHtml = '<div class="professional-report">';
+            
+            // Report Header
+            reportHtml += `
+                <div class="report-header-section">
+                    <div class="report-title">MEDICAL EMERGENCY REPORT</div>
+                    <div class="report-subtitle">Makkah Emergency Medical Services</div>
+                    <div class="report-meta">
+                        <span class="report-date">${new Date().toLocaleDateString('en-GB')}</span>
+                        <span class="report-time">${new Date().toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'})}</span>
+                        <span class="report-severity severity-${(analysis.severity || 'unknown').toLowerCase().replace(' ', '-')}">${analysis.severity || 'Unknown'}</span>
+                    </div>
+                </div>
+            `;
+
+            // Patient Information Section
+            if (analysis.patient) {
+                reportHtml += `
+                    <div class="report-section">
+                        <div class="section-header">PATIENT INFORMATION</div>
+                        <div class="section-content">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">Name:</span>
+                                    <span class="info-value editable-field" data-field="patient.name">${analysis.patient.name || 'Not provided'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Age:</span>
+                                    <span class="info-value editable-field" data-field="patient.age">${analysis.patient.age || 'Not provided'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Gender:</span>
+                                    <span class="info-value editable-field" data-field="patient.gender">${analysis.patient.gender || 'Not provided'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Nationality:</span>
+                                    <span class="info-value editable-field" data-field="patient.nationality">${analysis.patient.nationality || 'Not provided'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">ID Number:</span>
+                                    <span class="info-value editable-field" data-field="patient.ID">${analysis.patient.ID || 'Not provided'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Scene Information Section
+            if (analysis.scene) {
+                reportHtml += `
+                    <div class="report-section">
+                        <div class="section-header">INCIDENT INFORMATION</div>
+                        <div class="section-content">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">Date:</span>
+                                    <span class="info-value editable-field" data-field="scene.date">${analysis.scene.date || 'Not provided'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Time:</span>
+                                    <span class="info-value editable-field" data-field="scene.time">${analysis.scene.time || 'Not provided'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Location:</span>
+                                    <span class="info-value editable-field" data-field="scene.location">${analysis.scene.location || 'Not provided'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Case Code:</span>
+                                    <span class="info-value editable-field" data-field="scene.case_code">${analysis.scene.case_code || 'Not provided'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Case Type:</span>
+                                    <span class="info-value editable-field" data-field="scene.case_type">${analysis.scene.case_type || 'Not provided'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Mechanism:</span>
+                                    <span class="info-value editable-field" data-field="scene.mechanism">${analysis.scene.mechanism || 'Not provided'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Caller Phone:</span>
+                                    <span class="info-value editable-field" data-field="scene.caller_phone">${analysis.scene.caller_phone || 'Not provided'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Chief Complaint
+            if (analysis.chief_complaint) {
+                reportHtml += `
+                    <div class="report-section">
+                        <div class="section-header">CHIEF COMPLAINT</div>
+                        <div class="section-content">
+                            <div class="narrative-text editable-field" data-field="chief_complaint">${analysis.chief_complaint}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // History of Present Illness
+            if (analysis.history) {
+                reportHtml += `
+                    <div class="report-section">
+                        <div class="section-header">HISTORY OF PRESENT ILLNESS</div>
+                        <div class="section-content">
+                            <div class="history-grid">
+                                <div class="history-item">
+                                    <span class="history-label">Onset:</span>
+                                    <span class="history-value editable-field" data-field="history.onset">${analysis.history.onset || 'Not specified'}</span>
+                                </div>
+                                <div class="history-item">
+                                    <span class="history-label">Duration:</span>
+                                    <span class="history-value editable-field" data-field="history.duration">${analysis.history.duration || 'Not specified'}</span>
+                                </div>
+                                <div class="history-item">
+                                    <span class="history-label">Last Meal:</span>
+                                    <span class="history-value editable-field" data-field="history.last_meal">${analysis.history.last_meal || 'Not specified'}</span>
+                                </div>
+                                <div class="history-item">
+                                    <span class="history-label">Events:</span>
+                                    <span class="history-value editable-field" data-field="history.events">${analysis.history.events || 'Not specified'}</span>
+                                </div>
+                            </div>
+                            ${analysis.history.associated_symptoms && analysis.history.associated_symptoms.length > 0 ? `
+                                <div class="symptoms-section">
+                                    <div class="symptoms-label">Associated Symptoms:</div>
+                                    <div class="symptoms-list">
+                                        ${analysis.history.associated_symptoms.map(symptom => `<span class="symptom-tag">${symptom}</span>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Past Medical History
+            if (analysis.history && (analysis.history.allergies || analysis.history.medications || analysis.history.past_history)) {
+                reportHtml += `
+                    <div class="report-section">
+                        <div class="section-header">PAST MEDICAL HISTORY</div>
+                        <div class="section-content">
+                            <div class="medical-history">
+                                ${analysis.history.allergies ? `
+                                    <div class="history-item">
+                                        <span class="history-label">Allergies:</span>
+                                        <span class="history-value editable-field" data-field="history.allergies">${analysis.history.allergies}</span>
+                                    </div>
+                                ` : ''}
+                                ${analysis.history.medications ? `
+                                    <div class="history-item">
+                                        <span class="history-label">Current Medications:</span>
+                                        <span class="history-value editable-field" data-field="history.medications">${analysis.history.medications}</span>
+                                    </div>
+                                ` : ''}
+                                ${analysis.history.past_history ? `
+                                    <div class="history-item">
+                                        <span class="history-label">Past Medical History:</span>
+                                        <span class="history-value editable-field" data-field="history.past_history">${analysis.history.past_history}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Vital Signs
+            if (analysis.vitals) {
+                reportHtml += `
+                    <div class="report-section">
+                        <div class="section-header">VITAL SIGNS</div>
+                        <div class="section-content">
+                            <div class="vitals-grid">
+                                <div class="vital-item">
+                                    <span class="vital-label">Blood Pressure:</span>
+                                    <span class="vital-value editable-field" data-field="vitals.bp">${analysis.vitals.bp_systolic && analysis.vitals.bp_diastolic ? `${analysis.vitals.bp_systolic}/${analysis.vitals.bp_diastolic} mmHg` : 'Not measured'}</span>
+                                </div>
+                                <div class="vital-item">
+                                    <span class="vital-label">Heart Rate:</span>
+                                    <span class="vital-value editable-field" data-field="vitals.hr">${analysis.vitals.hr ? `${analysis.vitals.hr} bpm` : 'Not measured'}</span>
+                                </div>
+                                <div class="vital-item">
+                                    <span class="vital-label">Respiratory Rate:</span>
+                                    <span class="vital-value editable-field" data-field="vitals.rr">${analysis.vitals.rr ? `${analysis.vitals.rr} /min` : 'Not measured'}</span>
+                                </div>
+                                <div class="vital-item">
+                                    <span class="vital-label">SpO2:</span>
+                                    <span class="vital-value editable-field" data-field="vitals.spo2">${analysis.vitals.spo2 ? `${analysis.vitals.spo2}%` : 'Not measured'}</span>
+                                </div>
+                                <div class="vital-item">
+                                    <span class="vital-label">Temperature:</span>
+                                    <span class="vital-value editable-field" data-field="vitals.temp">${analysis.vitals.temp ? `${analysis.vitals.temp}°C` : 'Not measured'}</span>
+                                </div>
+                                <div class="vital-item">
+                                    <span class="vital-label">GCS:</span>
+                                    <span class="vital-value editable-field" data-field="vitals.gcs">${analysis.vitals.gcs || 'Not assessed'}</span>
+                                </div>
+                                <div class="vital-item">
+                                    <span class="vital-label">Pain Scale:</span>
+                                    <span class="vital-value editable-field" data-field="vitals.pain_scale_0_10">${analysis.vitals.pain_scale_0_10 ? `${analysis.vitals.pain_scale_0_10}/10` : 'Not assessed'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Physical Examination
+            if (analysis.exam) {
+                reportHtml += `
+                    <div class="report-section">
+                        <div class="section-header">PHYSICAL EXAMINATION</div>
+                        <div class="section-content">
+                            <div class="narrative-text editable-field" data-field="exam">${analysis.exam}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Interventions
+            if (analysis.interventions && analysis.interventions.length > 0) {
+                reportHtml += `
+                    <div class="report-section">
+                        <div class="section-header">INTERVENTIONS PERFORMED</div>
+                        <div class="section-content">
+                            <div class="interventions-list">
+                                ${analysis.interventions.map((intervention, index) => `
+                                    <div class="intervention-item">
+                                        <span class="intervention-number">${index + 1}.</span>
+                                        <span class="intervention-text">${intervention}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Assessment and Plan
+            reportHtml += `
+                <div class="report-section">
+                    <div class="section-header">ASSESSMENT AND PLAN</div>
+                    <div class="section-content">
+                        <div class="assessment-item">
+                            <span class="assessment-label">Clinical Assessment:</span>
+                            <span class="assessment-value editable-field" data-field="reasoning">${analysis.reasoning || 'Assessment pending'}</span>
+                        </div>
+                        <div class="assessment-item">
+                            <span class="assessment-label">Recommendation:</span>
+                            <span class="assessment-value editable-field" data-field="recommendation">${analysis.recommendation || 'Recommendation pending'}</span>
+                        </div>
+                        <div class="assessment-item">
+                            <span class="assessment-label">Severity Level:</span>
+                            <span class="assessment-value severity-${(analysis.severity || 'unknown').toLowerCase().replace(' ', '-')} editable-field" data-field="severity">${analysis.severity || 'Unknown'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            reportHtml += '</div>';
+            return reportHtml;
+        }
+
         // ========== UI DISPLAY FUNCTIONS ==========
         function displayReport(data) {
             const analysis = data.analysis;
@@ -483,6 +2022,9 @@
                 showError('Analysis error: ' + analysis.error);
                 return;
             }
+
+            // Store original analysis for editing
+            originalAnalysis = JSON.parse(JSON.stringify(analysis));
 
             const severity = analysis.severity || 'Unknown';
             const severityClass = 'severity-' + severity.toLowerCase().replace(' ', '-');
@@ -522,14 +2064,16 @@
                 `;
             }
 
-            if (analysis.form_en) {
-                html += `
-                    <div class="full-report">
-                        <h3>📄 Complete Report</h3>
-                        <pre>${analysis.form_en}</pre>
-                    </div>
-                `;
-            }
+            // Add widgets for quick overview
+            html += generateWidgets(analysis);
+
+            // Add professional report section
+            html += `
+                <div class="professional-report-section">
+                    <div class="section-header">DETAILED MEDICAL REPORT</div>
+                    ${generateProfessionalReport(analysis)}
+                </div>
+            `;
 
             if (data.transcript) {
                 html += `
@@ -542,6 +2086,8 @@
 
             html += `
                 <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="toggleEditMode()">Edit Report</button>
+                    <button class="btn btn-primary" onclick="printReport()">🖨️ Print Report</button>
                     <button class="btn btn-primary" onclick="newRecording()">New Recording</button>
                 </div>
             `;

@@ -1,0 +1,45 @@
+{
+  "patient": {
+    "name": "N/A",
+    "gender": "N/A",
+    "age": "N/A",
+    "nationality": "N/A",
+    "ID": "N/A"
+  },
+  "scene": {
+    "date": "N/A",
+    "time": "N/A",
+    "caller_phone": "N/A",
+    "location": "N/A",
+    "case_code": "N/A",
+    "case_type": "N/A",
+    "mechanism": "N/A"
+  },
+  "chief_complaint": "N/A",
+  "history": {
+    "onset": "N/A",
+    "duration": "N/A",
+    "associated_symptoms": [],
+    "allergies": "N/A",
+    "medications": "N/A",
+    "past_history": "N/A",
+    "last_meal": "N/A",
+    "events": "N/A"
+  },
+  "vitals": {
+    "bp_systolic": null,
+    "bp_diastolic": null,
+    "hr": null,
+    "rr": null,
+    "spo2": null,
+    "temp": null,
+    "gcs": null,
+    "pain_scale_0_10": null
+  },
+  "exam": "N/A",
+  "interventions": [],
+  "severity": "N/A",
+  "recommendation": "N/A",
+  "reasoning": "N/A",
+  "form_en": "==== PATIENT INFO ====\nName              : N/A\nGender            : N/A\nAge               : N/A\nNationality       : N/A\nID                : N/A\n\n==== SCENE DETAILS ====\nDate              : N/A\nTime              : N/A\nCaller Phone      : N/A\nLocation          : N/A\nCase Code         : N/A\nCase Type         : N/A\nMechanism         : N/A\n\n==== CHIEF COMPLAINT ====\nN/A\n\n==== HISTORY (SAMPLE) ====\nOnset             : N/A\nDuration          : N/A\nAssociated Sx     : N/A\nAllergies         : N/A\nMedications       : N/A\nPast History      : N/A\nLast Meal         : N/A\nEvents            : N/A\n\n==== VITALS ====\nBP (Sys/Dia)      : N/A\nHeart Rate        : N/A\nResp Rate         : N/A\nSpO2              : N/A\nTemperature       : N/A\nGCS               : N/A\nPain (0-10)       : N/A\n\n==== EXAM FINDINGS ====\nN/A\n\n==== INTERVENTIONS ====\n- N/A\n\n==== SEVERITY & ACTION ====\nSeverity          : N/A\nRecommendation    : N/A\nReasoning         : N/A"
+}

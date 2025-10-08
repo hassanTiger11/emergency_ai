@@ -1,0 +1,49 @@
+==== PATIENT INFO ====
+Name              : Hassan Namer
+Gender            : Male
+Age               : 25
+Nationality       : Saudi
+ID                : N/A
+
+==== SCENE DETAILS ====
+Date              : N/A
+Time              : N/A
+Caller Phone      : N/A
+Location          : N/A
+Case Code         : N/A
+Case Type         : Medical
+Mechanism         : Other
+
+==== CHIEF COMPLAINT ====
+Severe headache and nausea.
+
+==== HISTORY (SAMPLE) ====
+Onset             : 3 hours ago
+Duration          : N/A
+Associated Sx     : nausea
+Allergies         : N/A
+Medications       : Medjool
+Past History      : Heart disease for 2 years.
+Last Meal         : N/A
+Events            : N/A
+
+==== VITALS ====
+BP (Sys/Dia)      : 180/N/A
+Heart Rate        : N/A
+Resp Rate         : N/A
+SpO2              : N/A
+Temperature       : 37°C
+GCS               : N/A
+Pain (0-10)       : N/A
+
+==== EXAM FINDINGS ====
+High blood pressure and low blood sugar.
+
+==== INTERVENTIONS ====
+- Monitor vitals
+- Administer glucose if necessary
+
+==== SEVERITY & ACTION ====
+Severity          : High
+Recommendation    : Transfer to hospital
+Reasoning         : Patient has severe headache, nausea, and significant medical history with high blood pressure.

@@ -7,20 +7,17 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies for audio and PDF generation
+# Install system dependencies for PDF generation
 RUN apt-get update && apt-get install -y \
-    libportaudio2 \
-    libsndfile1 \
     libgl1-mesa-glx \
     libglib2.0-0 \
-    libgstreamer1.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy UV configuration files first for better caching
-COPY pyproject.toml uv.lock* ./
+# Copy requirements first for better caching
+COPY requirements.txt .
 
 # Install dependencies using UV (much faster than pip)
-RUN uv sync --frozen --no-dev
+RUN uv pip install --system --no-cache -r requirements.txt
 
 # Copy application files
 COPY api.py .
@@ -35,5 +32,5 @@ RUN mkdir -p .output
 # Expose port
 EXPOSE 8000
 
-# Use UV to run the application
-CMD ["uv", "run", "uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the application
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]

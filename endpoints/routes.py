@@ -31,7 +31,9 @@ async def root():
 
 async def upload_audio(
     session_id: str = Form(...),
-    audio_file: UploadFile = File(...)
+    audio_file: UploadFile = File(...),
+    current_user: Optional[Paramedic] = Depends(get_optional_current_user),
+    db: Session = Depends(get_db)
 ):
     """
     Accept audio file from browser and process it.
@@ -64,25 +66,26 @@ async def upload_audio(
         
         # Save to database if auth is enabled and user is logged in
         conversation_id = None
-        if ENABLE_AUTH:
+        if ENABLE_AUTH and current_user:
             try:
-                # Get database session
-                from database.connection import SessionLocal
-                db = SessionLocal()
-                try:
-                    # Get current user from token in request headers
-                    from fastapi import Request
-                    from database.auth import get_optional_current_user
-                    
-                    # We need to manually handle the authentication here
-                    # For now, let's skip database saving until we fix the auth properly
-                    print("🔍 Auth enabled but skipping database save due to dependency issues")
-                    
-                finally:
-                    db.close()
+                # Create conversation record
+                conversation = ConversationModel(
+                    session_id=session_id,
+                    paramedic_id=current_user.id,
+                    transcript=transcript,
+                    analysis=analysis
+                )
+                db.add(conversation)
+                db.commit()
+                db.refresh(conversation)
+                conversation_id = conversation.id
+                print(f"💾 Saved conversation to database (ID: {conversation_id}) for user: {current_user.name}")
             except Exception as db_error:
                 print(f"⚠️  Failed to save to database: {str(db_error)}")
+                db.rollback()
                 # Continue anyway - file system backup exists
+        elif ENABLE_AUTH:
+            print("🔓 Auth enabled but user not logged in - skipping database save")
         
         print(f"✅ Completed processing for session: {short_session}")
         

@@ -112,19 +112,31 @@ async def upload_profile_picture(
         )
     
     try:
-        # Create unique filename
-        filename = f"user_{current_user.id}{file_ext}"
-        file_path = PROFILE_PICS_DIR / filename
+        # Read file content and encode as base64
+        file_content = await file.read()
+        import base64
+        base64_data = base64.b64encode(file_content).decode('utf-8')
         
-        # Save file
-        with file_path.open("wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        # Determine MIME type for data URL
+        mime_type = "image/jpeg"  # default
+        if file_ext in ['.png']:
+            mime_type = "image/png"
+        elif file_ext in ['.gif']:
+            mime_type = "image/gif"
+        elif file_ext in ['.webp']:
+            mime_type = "image/webp"
         
-        # Update user profile
-        current_user.profile_pic_url = f"/uploads/profile_pics/{filename}"
+        # Create data URL
+        data_url = f"data:{mime_type};base64,{base64_data}"
+        
+        # Update user profile with base64 data
+        current_user.profile_pic_data = data_url
+        # Keep the old URL field for backward compatibility (set to None)
+        current_user.profile_pic_url = None
         db.commit()
         db.refresh(current_user)
         
+        print(f"💾 Saved profile picture to database for user: {current_user.name}")
         return ParamedicResponse.model_validate(current_user)
         
     except Exception as e:
@@ -143,19 +155,11 @@ async def delete_profile_picture(
     """
     Delete the current user's profile picture
     """
-    if current_user.profile_pic_url:
-        # Extract filename from URL
-        filename = current_user.profile_pic_url.split('/')[-1]
-        file_path = PROFILE_PICS_DIR / filename
-        
-        # Delete file if it exists
-        if file_path.exists():
-            os.remove(file_path)
-        
-        # Update user profile
-        current_user.profile_pic_url = None
-        db.commit()
-        db.refresh(current_user)
+    # Clear both URL and base64 data
+    current_user.profile_pic_url = None
+    current_user.profile_pic_data = None
+    db.commit()
+    db.refresh(current_user)
     
     return ParamedicResponse.model_validate(current_user)
 

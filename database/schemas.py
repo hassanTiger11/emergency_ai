@@ -35,6 +35,7 @@ class ParamedicResponse(ParamedicBase):
     """Schema for paramedic response (without password)"""
     id: int
     profile_pic_url: Optional[str] = None
+    profile_pic_data: Optional[str] = None  # Base64 encoded image data
     created_at: datetime
     updated_at: datetime
     

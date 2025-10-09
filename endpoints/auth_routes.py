@@ -6,7 +6,7 @@ from fastapi import Depends, HTTPException, status, APIRouter
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
-from database.connection import get_db
+from database.connection import get_db, is_db_connected, get_db_error
 from database.models import Paramedic
 from database.schemas import (
     ParamedicCreate, 
@@ -33,6 +33,13 @@ async def signup(paramedic_data: ParamedicCreate, db: Session = Depends(get_db))
     Creates a new paramedic account with hashed password and returns
     an access token for immediate login.
     """
+    # Check database connection
+    if not is_db_connected() or db is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database connection unavailable: {get_db_error()}"
+        )
+    
     # Check if email already exists
     existing_user = db.query(Paramedic).filter(Paramedic.email == paramedic_data.email).first()
     if existing_user:
@@ -96,6 +103,13 @@ async def login(login_data: LoginRequest, db: Session = Depends(get_db)):
     
     Returns an access token and user information if credentials are valid.
     """
+    # Check database connection
+    if not is_db_connected() or db is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Database connection unavailable: {get_db_error()}"
+        )
+    
     paramedic = authenticate_paramedic(db, login_data.email, login_data.password)
     
     if not paramedic:

@@ -46,46 +46,124 @@ function startNewSession() {
 
 // Load conversations from API
 async function loadConversations() {
+    console.log('🔄 loadConversations called');
     const authToken = localStorage.getItem('auth_token');
-    if (!authToken) return;
+    if (!authToken) {
+        console.log('🔄 No auth token, skipping conversation load');
+        return;
+    }
     
     try {
+        console.log('🔄 Fetching conversations from API...');
         const response = await fetch('/api/user/conversations', {
             headers: {
                 'Authorization': `Bearer ${authToken}`
             }
         });
         
+        console.log('🔄 API response status:', response.status);
+        
         if (response.ok) {
             const conversations = await response.json();
+            console.log('🔄 API returned conversations:', conversations);
             displayConversations(conversations);
+        } else {
+            console.log('🔄 API error:', response.status, response.statusText);
+            const errorText = await response.text();
+            console.log('🔄 Error details:', errorText);
         }
     } catch (error) {
-        console.error('Failed to load conversations:', error);
+        console.error('🔄 Failed to load conversations:', error);
     }
 }
 
 // Display conversations in sidebar
 function displayConversations(conversations) {
+    console.log('📋 displayConversations called with:', conversations);
     const listContainer = document.getElementById('conversationsList');
     
     if (!conversations || conversations.length === 0) {
+        console.log('📋 No conversations, showing empty message');
         listContainer.innerHTML = '<p class="no-conversations">No previous sessions</p>';
         return;
     }
     
+    console.log(`📋 Processing ${conversations.length} conversations`);
     listContainer.innerHTML = conversations.map(conv => {
-        const date = new Date(conv.created_at);
-        const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        console.log('📋 Processing conversation:', conv);
+        const smartTime = formatSmartTime(conv.created_at);
         const title = conv.patient_name || conv.chief_complaint || `Session ${conv.session_id.substring(0, 8)}`;
+        
+        console.log('📋 Final display:', { title, smartTime });
         
         return `
             <button class="conversation-item" onclick="loadConversation(${conv.id})">
                 <div class="conversation-title">${title}</div>
-                <div class="conversation-date">${dateStr}</div>
+                <div class="conversation-date">${smartTime}</div>
             </button>
         `;
     }).join('');
+}
+
+// Smart time formatting with timezone auto-detection
+function formatSmartTime(dateString) {
+    console.log('🕒 formatSmartTime called with:', dateString);
+    
+    const date = new Date(dateString); // UTC from database
+    const now = new Date();
+    const diffMs = now - date;
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+    
+    console.log('🕒 Time calculation:', {
+        date: date.toISOString(),
+        now: now.toISOString(),
+        diffHours,
+        diffDays
+    });
+    
+    // Recent: relative time (more user-friendly)
+    if (diffHours < 1) {
+        console.log('🕒 Returning: Just now');
+        return "Just now";
+    }
+    if (diffHours < 24) {
+        console.log(`🕒 Returning: ${diffHours} hours ago`);
+        return `${diffHours} hours ago`;
+    }
+    if (diffDays === 1) {
+        console.log('🕒 Returning: Yesterday');
+        return "Yesterday";
+    }
+    if (diffDays < 7) {
+        console.log(`🕒 Returning: ${diffDays} days ago`);
+        return `${diffDays} days ago`;
+    }
+    
+    // Older: show with timezone (more precise)
+    try {
+        // Auto-detect user's timezone
+        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        console.log('🕒 User timezone:', userTimezone);
+        
+        const result = date.toLocaleString('en-US', {
+            timeZone: userTimezone,
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            timeZoneName: 'short'
+        });
+        console.log('🕒 Returning timezone format:', result);
+        return result;
+        // Result: "Oct 7 at 11:00 PM AST"
+    } catch (error) {
+        console.log('🕒 Timezone error, using fallback:', error);
+        // Fallback to simple date if timezone detection fails
+        const fallback = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        console.log('🕒 Returning fallback:', fallback);
+        return fallback;
+    }
 }
 
 // Load a specific conversation
@@ -136,8 +214,20 @@ function updateSidebarUser() {
             userName.textContent = user.name || user.email;
         }
         
-        if (userAvatar && user.profile_pic_url) {
-            userAvatar.innerHTML = `<img src="${user.profile_pic_url}" alt="Profile">`;
+        if (userAvatar) {
+            if (user.profile_pic_data) {
+                userAvatar.innerHTML = `<img src="${user.profile_pic_data}" alt="Profile">`;
+            } else if (user.profile_pic_url) {
+                // Fallback to URL with error handling for 404
+                const img = document.createElement('img');
+                img.src = user.profile_pic_url;
+                img.alt = 'Profile';
+                img.onerror = () => {
+                    console.log('🖼️ Profile picture URL failed in sidebar, using emoji fallback');
+                    userAvatar.textContent = '👨‍⚕️';
+                };
+                userAvatar.appendChild(img);
+            }
         }
     }
 }

@@ -123,17 +123,32 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     
+    # Check if database is available
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database connection unavailable",
+        )
+    
     token = credentials.credentials
     token_data = decode_access_token(token)
     
     if token_data is None or token_data.email is None:
         raise credentials_exception
     
-    paramedic = db.query(Paramedic).filter(Paramedic.email == token_data.email).first()
-    if paramedic is None:
+    try:
+        paramedic = db.query(Paramedic).filter(Paramedic.email == token_data.email).first()
+        if paramedic is None:
+            raise credentials_exception
+        return paramedic
+    except Exception as e:
+        # If database query fails, raise service unavailable instead of 401
+        if "database" in str(e).lower() or "connection" in str(e).lower():
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Database connection error",
+            )
         raise credentials_exception
-    
-    return paramedic
 
 
 async def get_optional_current_user(
@@ -144,7 +159,7 @@ async def get_optional_current_user(
     Dependency to get the current user if authenticated, otherwise None
     Used for routes that work with or without authentication
     """
-    if not ENABLE_AUTH or credentials is None:
+    if not ENABLE_AUTH or credentials is None or db is None:
         return None
     
     try:
@@ -157,6 +172,7 @@ async def get_optional_current_user(
         paramedic = db.query(Paramedic).filter(Paramedic.email == token_data.email).first()
         return paramedic
     except:
+        # Silently fail for optional authentication
         return None
 
 

@@ -24,13 +24,17 @@ from endpoints.routes import root, upload_audio, health_check, generate_pdf_repo
 # Import database dependencies (always available, but only used if auth enabled)
 from database.models import Paramedic
 from database.auth import get_optional_current_user
-from database.connection import get_db
+from database.connection import get_db, is_db_connected, get_db_error
 
 # Initialize database if auth is enabled
 if ENABLE_AUTH:
     from database.connection import init_db
     init_db()
-    print("🔐 Authentication enabled")
+    if is_db_connected():
+        print("🔐 Authentication enabled")
+    else:
+        print("⚠️  Authentication enabled but database connection failed")
+        print(f"⚠️  Error: {get_db_error()}")
 else:
     print("⚠️  Authentication disabled - running in development mode")
 
@@ -70,8 +74,22 @@ if ENABLE_AUTH:
 # ---------- API Endpoints ----------
 @app.get("/")
 async def get_root():
-    """Serve the main HTML page"""
+    """Serve the main HTML page or database error page"""
+    # Check if database connection failed
+    if ENABLE_AUTH and not is_db_connected():
+        db_error_file = Path("static/db_error.html")
+        if db_error_file.exists():
+            return HTMLResponse(content=db_error_file.read_text(encoding='utf-8'))
     return await root()
+
+
+@app.get("/db-error")
+async def get_db_error_page():
+    """Serve the database error page"""
+    db_error_file = Path("static/db_error.html")
+    if db_error_file.exists():
+        return HTMLResponse(content=db_error_file.read_text(encoding='utf-8'))
+    raise HTTPException(status_code=404, detail="Error page not found")
 
 
 @app.post("/api/upload-audio")
@@ -162,8 +180,15 @@ async def post_save_analysis(
 
 @app.get("/api/health")
 async def get_health_check():
-    """Health check endpoint"""
-    return await health_check()
+    """Health check endpoint with database status"""
+    db_status = is_db_connected() if ENABLE_AUTH else True
+    health_data = await health_check()
+    
+    if isinstance(health_data, dict):
+        health_data["database_connected"] = db_status
+        health_data["database_error"] = get_db_error() if not db_status else None
+    
+    return health_data
 
 
 @app.post("/api/generate-pdf")

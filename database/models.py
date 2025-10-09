@@ -24,6 +24,7 @@ class Paramedic(Base):
     email = Column(String(100), unique=True, index=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
     profile_pic_url = Column(String(255), nullable=True)
+    profile_pic_data = Column(Text, nullable=True)  # Base64 encoded image data
     
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

@@ -48,9 +48,22 @@ async function loadProfile() {
             document.getElementById('nationalId').value = user.national_id || '';
             
             // Update profile picture
-            if (user.profile_pic_url) {
+            if (user.profile_pic_data) {
                 const container = document.getElementById('profilePicContainer');
-                container.innerHTML = `<img src="${user.profile_pic_url}" class="profile-pic-preview" alt="Profile">`;
+                container.innerHTML = `<img src="${user.profile_pic_data}" class="profile-pic-preview" alt="Profile">`;
+                document.getElementById('deletePhotoBtn').style.display = 'inline-block';
+            } else if (user.profile_pic_url) {
+                // Fallback to URL with error handling for 404
+                const container = document.getElementById('profilePicContainer');
+                const img = document.createElement('img');
+                img.src = user.profile_pic_url;
+                img.className = 'profile-pic-preview';
+                img.alt = 'Profile';
+                img.onerror = () => {
+                    console.log('🖼️ Profile picture URL failed in settings, using placeholder');
+                    container.innerHTML = '<div class="profile-pic-placeholder" id="profilePicPlaceholder">👤</div>';
+                };
+                container.appendChild(img);
                 document.getElementById('deletePhotoBtn').style.display = 'inline-block';
             }
             
@@ -157,7 +170,20 @@ document.getElementById('profilePicInput').addEventListener('change', async (e) 
             
             // Update preview
             const container = document.getElementById('profilePicContainer');
-            container.innerHTML = `<img src="${user.profile_pic_url}?t=${Date.now()}" class="profile-pic-preview" alt="Profile">`;
+            if (user.profile_pic_data) {
+                container.innerHTML = `<img src="${user.profile_pic_data}" class="profile-pic-preview" alt="Profile">`;
+            } else if (user.profile_pic_url) {
+                // Use URL with error handling
+                const img = document.createElement('img');
+                img.src = user.profile_pic_url + '?t=' + Date.now();
+                img.className = 'profile-pic-preview';
+                img.alt = 'Profile';
+                img.onerror = () => {
+                    console.log('🖼️ Profile picture URL failed after upload, using placeholder');
+                    container.innerHTML = '<div class="profile-pic-placeholder" id="profilePicPlaceholder">👤</div>';
+                };
+                container.appendChild(img);
+            }
             document.getElementById('deletePhotoBtn').style.display = 'inline-block';
             
             showMessage('Profile picture uploaded successfully!', 'success');

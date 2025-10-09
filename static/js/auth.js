@@ -3,10 +3,37 @@
  * Handles login and signup functionality
  */
 
-// Check if user is already logged in
-if (localStorage.getItem('auth_token')) {
-    window.location.href = '/';
+// Check if user is already logged in with VALID token
+async function checkExistingAuth() {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+        try {
+            const response = await fetch('/api/auth/me', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (response.ok) {
+                // Token is valid, redirect to main page
+                window.location.href = '/';
+            } else {
+                // Token is invalid, clear it
+                console.log('🔐 Invalid token detected, clearing localStorage');
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('user_info');
+            }
+        } catch (error) {
+            // Network error or server issue, clear token to be safe
+            console.log('🔐 Auth check failed, clearing localStorage');
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_info');
+        }
+    }
 }
+
+// Run the check
+checkExistingAuth();
 
 // Toggle between login and signup forms
 function toggleForms() {

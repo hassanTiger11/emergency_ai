@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Connection Error</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .error-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            padding: 60px 40px;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .error-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+        
+        h1 {
+            font-size: 32px;
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+        
+        .error-code {
+            font-size: 18px;
+            color: #95a5a6;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+        
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        
+        .details {
+            background: #f8f9fa;
+            border-left: 4px solid #e74c3c;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: left;
+            border-radius: 5px;
+        }
+        
+        .details h3 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .details ul {
+            list-style-position: inside;
+            color: #555;
+        }
+        
+        .details li {
+            margin: 8px 0;
+        }
+        
+        .actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #555;
+        }
+        
+        .btn-secondary:hover {
+            background: #bdc3c7;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .status.checking {
+            background: #fff3cd;
+            color: #856404;
+            display: block;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">🔌</div>
+        <h1>Database Connection Error</h1>
+        <div class="error-code">Error 503 - Service Temporarily Unavailable</div>
+        
+        <p>We're having trouble connecting to the database. This could be due to:</p>
+        
+        <div class="details">
+            <h3>Possible Causes:</h3>
+            <ul>
+                <li>Database server is not running</li>
+                <li>Incorrect database credentials</li>
+                <li>Network connectivity issues</li>
+                <li>Database is being migrated or maintained</li>
+            </ul>
+        </div>
+        
+        <p>If you're a developer, please check your <code>DATABASE_URL</code> in the <code>.env</code> file.</p>
+        
+        <div id="status" class="status"></div>
+        
+        <div class="actions">
+            <button class="btn btn-primary" onclick="checkConnection()">
+                🔄 Check Connection
+            </button>
+            <a href="/" class="btn btn-secondary">
+                🏠 Try Again
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        async function checkConnection() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = 'status checking';
+            statusDiv.textContent = '🔍 Checking database connection...';
+            
+            try {
+                const response = await fetch('/api/health');
+                if (response.ok) {
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = '✅ Connection restored! Redirecting...';
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = '❌ Still unable to connect. Please try again later.';
+                }
+            } catch (error) {
+                statusDiv.className = 'status error';
+                statusDiv.textContent = '❌ Still unable to connect. Please try again later.';
+            }
+        }
+        
+        // Auto-check connection every 10 seconds
+        setInterval(() => {
+            fetch('/api/health')
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/';
+                    }
+                })
+                .catch(() => {
+                    // Still not connected
+                });
+        }, 10000);
+    </script>
+</body>
+</html>
+

@@ -37,15 +37,24 @@ async function checkAuthStatus(retryCount = 0) {
             return true;
         } else if (response.status === 401) {
             // Auth enabled but user not logged in
-            console.log('🔐 Authentication required - redirecting to login');
+            console.log('🔐 Authentication required');
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_info');
+            hideSidebar();
             redirectToLogin();
             return false;
         } else if (response.status === 403) {
             // Token invalid or expired
-            console.log('🔐 Invalid token - redirecting to login');
+            console.log('🔐 Invalid token');
             localStorage.removeItem('auth_token');
             localStorage.removeItem('user_info');
+            hideSidebar();
             redirectToLogin();
+            return false;
+        } else if (response.status === 503) {
+            // Database connection error
+            console.log('❌ Database connection error - showing error page');
+            window.location.href = '/db-error';
             return false;
         }
     } catch (error) {
@@ -76,9 +85,14 @@ async function checkAuthStatus(retryCount = 0) {
 
 function redirectToLogin() {
     // Only redirect if we're not already on the login page
-    if (!window.location.pathname.includes('login')) {
+    const currentPath = window.location.pathname;
+    if (!currentPath.includes('login') && !currentPath.includes('db-error')) {
         console.log('🔄 Redirecting to login page...');
         window.location.href = '/login';
+    } else if (currentPath.includes('login')) {
+        // Already on login page, just hide sidebar
+        console.log('📍 Already on login page');
+        hideSidebar();
     }
 }
 
@@ -113,8 +127,19 @@ function showSidebar(userData = null) {
             
             if (userAvatarElement) {
                 // Use profile picture if available, otherwise use emoji
-                if (user.profile_pic_url) {
-                    userAvatarElement.innerHTML = `<img src="${user.profile_pic_url}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                if (user.profile_pic_data) {
+                    userAvatarElement.innerHTML = `<img src="${user.profile_pic_data}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                } else if (user.profile_pic_url) {
+                    // Fallback to URL with error handling for 404
+                    const img = document.createElement('img');
+                    img.src = user.profile_pic_url;
+                    img.alt = 'Profile';
+                    img.style.cssText = 'width: 100%; height: 100%; border-radius: 50%; object-fit: cover;';
+                    img.onerror = () => {
+                        console.log('🖼️ Profile picture URL failed, using emoji fallback');
+                        userAvatarElement.textContent = '👨‍⚕️';
+                    };
+                    userAvatarElement.appendChild(img);
                 } else {
                     userAvatarElement.textContent = '👨‍⚕️'; // Medical professional emoji
                 }

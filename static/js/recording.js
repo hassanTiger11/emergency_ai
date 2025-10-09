@@ -97,9 +97,17 @@ async function uploadAudio(audioBlob) {
 
         console.log('📤 Uploading audio to server...');
 
+        // Prepare headers with auth token if available
+        const headers = {};
+        const authToken = localStorage.getItem('auth_token');
+        if (authToken) {
+            headers['Authorization'] = `Bearer ${authToken}`;
+        }
+
         // Upload to server
         const response = await fetch('/api/upload-audio', {
             method: 'POST',
+            headers: headers,
             body: formData
         });
 
@@ -111,6 +119,21 @@ async function uploadAudio(audioBlob) {
         const data = await response.json();
         console.log('✅ Processing completed');
         displayReport(data);
+
+        // Save analysis to database if authenticated
+        if (authToken && data.transcript && data.analysis) {
+            try {
+                await saveAnalysisToDatabase(SESSION_ID, data.transcript, data.analysis);
+            } catch (error) {
+                console.warn('⚠️  Failed to save analysis to database:', error);
+                // Don't fail the whole process if database save fails
+            }
+        }
+
+        // Reload conversations if auth is enabled
+        if (authToken && typeof loadConversations === 'function') {
+            setTimeout(loadConversations, 500);
+        }
 
         // Reset button
         recordButton.className = 'record-button idle';
@@ -133,6 +156,48 @@ function showError(message) {
     if (reportSection) {
         reportSection.innerHTML = errorHtml;
         reportSection.style.display = 'block';
+    }
+}
+
+// Save analysis to database
+async function saveAnalysisToDatabase(sessionId, transcript, analysis) {
+    try {
+        console.log('💾 Saving analysis to database...');
+        
+        const authToken = localStorage.getItem('auth_token');
+        if (!authToken) {
+            throw new Error('No authentication token found');
+        }
+
+        const formData = new FormData();
+        formData.append('session_id', sessionId);
+        formData.append('transcript', transcript);
+        formData.append('analysis', JSON.stringify(analysis));
+
+        const response = await fetch('/api/save-analysis', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.detail || 'Failed to save analysis');
+        }
+
+        const result = await response.json();
+        console.log('✅ Analysis saved to database:', result);
+        
+        // Reload conversations to show the new one
+        if (typeof loadConversations === 'function') {
+            setTimeout(loadConversations, 500);
+        }
+        
+    } catch (error) {
+        console.error('❌ Failed to save analysis to database:', error);
+        throw error;
     }
 }
 

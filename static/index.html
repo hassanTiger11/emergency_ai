@@ -8,37 +8,72 @@
     <!-- External Stylesheets -->
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/report.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🚑 Paramedic Assistant</h1>
-            <p>Makkah Emergency Medical Services - AI-Powered Report Generation</p>
-            <div class="session-info">
-                <div>Session ID: <span id="sessionDisplay">Initializing...</span></div>
+    <!-- Sidebar for conversation history (only shown when auth is enabled) -->
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">👤</div>
+                <div class="user-info">
+                    <div class="user-name" id="userName">Guest</div>
+                </div>
+            </div>
+            <button class="new-session-btn" onclick="startNewSession()">+ New Session</button>
+        </div>
+
+        <div class="sidebar-content">
+            <h3>Previous Sessions</h3>
+            <div id="conversationsList" class="conversations-list">
+                <p class="no-conversations">No previous sessions</p>
             </div>
         </div>
 
-        <div class="card">
-            <div class="recording-section">
-                <button id="recordButton" class="record-button idle" onclick="toggleRecording()">
-                    <div class="icon">🎙️</div>
-                    <div id="buttonText">Start Recording</div>
-                </button>
-                <div id="statusText" class="status-text">Click the button to begin</div>
+        <div class="sidebar-footer">
+            <button class="settings-btn" onclick="window.location.href='/settings.html'">
+                ⚙️ Settings
+            </button>
+        </div>
+    </div>
+
+    <!-- Toggle button for sidebar -->
+    <button id="sidebarToggle" class="sidebar-toggle">☰</button>
+
+    <!-- Main content -->
+    <div class="main-content" id="mainContent">
+        <div class="container">
+            <div class="header">
+                <h1>🚑 Paramedic Assistant</h1>
+                <p>Makkah Emergency Medical Services - AI-Powered Report Generation</p>
+                <div class="session-info">
+                    <div>Session ID: <span id="sessionDisplay">Initializing...</span></div>
+                </div>
             </div>
 
-            <div id="reportSection" class="report-section">
-                <!-- Report will be dynamically inserted here -->
+            <div class="card">
+                <div class="recording-section">
+                    <button id="recordButton" class="record-button idle" onclick="toggleRecording()">
+                        <div class="icon">🎙️</div>
+                        <div id="buttonText">Start Recording</div>
+                    </button>
+                    <div id="statusText" class="status-text">Click the button to begin</div>
+                </div>
+
+                <div id="reportSection" class="report-section">
+                    <!-- Report will be dynamically inserted here -->
+                </div>
             </div>
         </div>
     </div>
 
     <!-- External JavaScript Modules -->
+    <script src="/js/auth-check.js"></script>
     <script src="/js/session.js"></script>
     <script src="/js/widgets.js"></script>
     <script src="/js/report.js"></script>
     <script src="/js/edit.js"></script>
+    <script src="/js/sidebar.js"></script>
     <script src="/js/recording.js"></script>
 
     <script>

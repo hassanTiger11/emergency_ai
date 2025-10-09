@@ -10,6 +10,9 @@ An AI-powered web application that helps paramedics create medical reports throu
 - 📋 **Structured Reports**: Generates standardized EMS reports with all relevant fields
 - 🎨 **Modern UI**: Beautiful, responsive interface optimized for field use
 - 📊 **Severity Assessment**: Automatic triage severity and recommendation
+- 🔐 **User Authentication** (Optional): Complete user management system with login, profiles, and conversation history
+- 💾 **Database Storage** (Optional): PostgreSQL integration for persistent conversation storage
+- 📱 **ChatGPT-Style Sidebar**: Collapsible sidebar for accessing previous sessions (when auth enabled)
 
 ## Setup Instructions
 
@@ -36,7 +39,16 @@ An AI-powered web application that helps paramedics create medical reports throu
    Create a `.env` file in the project root:
    ```
    OPENAI_API_KEY=your_openai_api_key_here
+   
+   # Optional: Enable authentication (default: false)
+   ENABLE_AUTH=false
+   
+   # If ENABLE_AUTH=true, also configure:
+   # JWT_SECRET_KEY=your-secure-secret-key
+   # DATABASE_URL=postgresql://user:password@localhost:5432/emergency_ai
    ```
+   
+   **Note**: For detailed authentication setup, see [AUTHENTICATION_SETUP.md](AUTHENTICATION_SETUP.md)
 
 ### Running the Application
 
@@ -198,11 +210,39 @@ Change the port in `api.py` or use:
 uvicorn api:app --port 8080
 ```
 
+## 🔐 Authentication System
+
+The application includes an **optional authentication system** that can be enabled/disabled via configuration:
+
+### Quick Start (No Authentication)
+```bash
+ENABLE_AUTH=false  # Default - runs without authentication
+```
+
+### With Authentication
+```bash
+ENABLE_AUTH=true
+JWT_SECRET_KEY=your-secure-secret-key
+DATABASE_URL=postgresql://user:password@localhost:5432/emergency_ai
+```
+
+When authentication is enabled, the application provides:
+- User signup and login
+- Secure password hashing
+- JWT token authentication
+- User profile management with profile pictures
+- Conversation history stored in PostgreSQL
+- ChatGPT-style sidebar for accessing previous sessions
+- Settings page for managing account
+
+**For complete setup instructions**, see [AUTHENTICATION_SETUP.md](AUTHENTICATION_SETUP.md)
+
 ## Security Notes
 
 - Keep your `.env` file secure and never commit it to version control
 - Use HTTPS in production environments
-- Implement authentication for production deployments
+- Use strong JWT secret keys (minimum 32 characters) when auth is enabled
+- Enable authentication (`ENABLE_AUTH=true`) for production deployments
 - Ensure HIPAA compliance when handling patient data
 
 ## License

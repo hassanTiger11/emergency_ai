@@ -109,8 +109,13 @@ function displayConversations(conversations) {
 function formatSmartTime(dateString) {
     console.log('🕒 formatSmartTime called with:', dateString);
     
-    const date = new Date(dateString); // UTC from database
-    // convert date to user timezone
+    // Tag the timestamp to UTC with a Z label "ISO 8601"
+    let utcString = dateString;
+    if (!dateString.endsWith('Z') && !dateString.includes('+')) {
+        utcString = dateString + 'Z';
+    }
+
+    const date = new Date(utcString);
     const now = new Date();
     const diffMs = now - date;
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));

@@ -19,15 +19,46 @@ document.getElementById('sidebarToggle')?.addEventListener('click', () => {
 });
 
 // Start new session
-function startNewSession() {
+async function startNewSession() {
+    console.log('🆕 Starting new session...');
+    
+    // Check if currently recording and save if needed
+    if (typeof window.isRecording !== 'undefined' && window.isRecording) {
+        console.log('💾 Currently recording - saving current session first...');
+        try {
+            // Stop current recording and save it
+            if (typeof stopRecording === 'function') {
+                await stopRecording();
+            }
+            // Wait a bit for the upload to complete
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        } catch (error) {
+            console.warn('⚠️ Failed to save current recording:', error);
+        }
+    }
+    
     // Clear current report
-    document.getElementById('reportSection').innerHTML = '';
+    const reportSection = document.getElementById('reportSection');
+    if (reportSection) {
+        reportSection.innerHTML = '';
+        reportSection.style.display = 'none';
+    }
     
     // Generate new session ID
-    if (typeof generateSessionId === 'function') {
-        const newSessionId = generateSessionId();
-        sessionId = newSessionId;
-        document.getElementById('sessionDisplay').textContent = newSessionId.substring(0, 8);
+    const newSessionId = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+    
+    // Update global session ID
+    sessionId = newSessionId;
+    localStorage.setItem('paramedic_session_id', newSessionId);
+    
+    // Update session display
+    const sessionDisplay = document.getElementById('sessionDisplay');
+    if (sessionDisplay) {
+        sessionDisplay.textContent = newSessionId.substring(0, 8) + '...';
     }
     
     // Reset recording state
@@ -41,7 +72,15 @@ function startNewSession() {
         statusText.textContent = 'Click the button to begin';
     }
     
-    console.log('Started new session');
+    // Reset any global recording state
+    if (typeof window.isRecording !== 'undefined') {
+        window.isRecording = false;
+    }
+    if (typeof window.isProcessing !== 'undefined') {
+        window.isProcessing = false;
+    }
+    
+    console.log('✅ Started new session:', newSessionId);
 }
 
 // Load conversations from API
@@ -191,9 +230,9 @@ async function loadConversation(conversationId) {
             sessionId = conversation.session_id;
             document.getElementById('sessionDisplay').textContent = conversation.session_id.substring(0, 8);
             
-            // Display the report
+            // Display the report - pass the full conversation object
             if (typeof displayReport === 'function') {
-                displayReport(conversation.analysis);
+                displayReport(conversation);
             }
             
             // Mark as active

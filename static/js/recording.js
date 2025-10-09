@@ -9,6 +9,10 @@ let audioChunks = [];
 let isRecording = false;
 let isProcessing = false;
 
+// Expose recording state globally for other modules
+window.isRecording = isRecording;
+window.isProcessing = isProcessing;
+
 // DOM elements
 const recordButton = document.getElementById('recordButton');
 const buttonText = document.getElementById('buttonText');
@@ -48,6 +52,7 @@ async function startRecording() {
         // Start recording in browser
         mediaRecorder.start();
         isRecording = true;
+        window.isRecording = true;
         
         recordButton.className = 'record-button recording';
         buttonText.textContent = 'Stop Recording';
@@ -86,6 +91,8 @@ async function uploadAudio(audioBlob) {
     try {
         isRecording = false;
         isProcessing = true;
+        window.isRecording = false;
+        window.isProcessing = true;
         recordButton.className = 'record-button processing';
         buttonText.innerHTML = '<div class="loader"></div>';
         statusText.textContent = '⏳ Uploading and processing...';
@@ -148,6 +155,7 @@ async function uploadAudio(audioBlob) {
         console.error('Processing error:', error);
     } finally {
         isProcessing = false;
+        window.isProcessing = false;
     }
 }
 

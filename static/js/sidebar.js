@@ -110,6 +110,7 @@ function formatSmartTime(dateString) {
     console.log('🕒 formatSmartTime called with:', dateString);
     
     const date = new Date(dateString); // UTC from database
+    // convert date to user timezone
     const now = new Date();
     const diffMs = now - date;
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));

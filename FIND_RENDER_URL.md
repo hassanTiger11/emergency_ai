@@ -47,3 +47,4 @@ Your database URL is: `postgresql://mubeen_account_db_user:AZwPKaC5wftLNqOZQcOsI
 
 This should be set as your `DATABASE_URL` environment variable in your Render app settings.
 
+

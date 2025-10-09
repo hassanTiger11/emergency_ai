@@ -19,8 +19,9 @@ RUN uv pip install --system --no-cache -r requirements.txt
 COPY api.py .
 COPY endpoints/ ./endpoints/
 COPY ai_model/ ./ai_model/
+COPY database/ ./database/
 COPY static/ ./static/
-COPY .env* ./
+#COPY .env* ./
 
 # Create output directory
 RUN mkdir -p .output

@@ -21,6 +21,11 @@ from endpoints.config import (
 )
 from endpoints.routes import root, upload_audio, health_check, generate_pdf_report
 
+# Import database dependencies (always available, but only used if auth enabled)
+from database.models import Paramedic
+from database.auth import get_optional_current_user
+from database.connection import get_db
+
 # Initialize database if auth is enabled
 if ENABLE_AUTH:
     from database.connection import init_db
@@ -33,9 +38,6 @@ else:
 if ENABLE_AUTH:
     from endpoints.auth_routes import router as auth_router
     from endpoints.user_routes import router as user_router
-    from database.models import Paramedic
-    from database.auth import get_optional_current_user
-    from database.connection import get_db
 
 # Initialize FastAPI app
 app = FastAPI(title="Paramedic Assistant API")
@@ -75,13 +77,21 @@ async def get_root():
 @app.post("/api/upload-audio")
 async def post_upload_audio(
     session_id: str = Form(...),
-    audio_file: UploadFile = File(...)
+    audio_file: UploadFile = File(...),
+    current_user: Optional[Paramedic] = Depends(get_optional_current_user),
+    db: Optional[Session] = Depends(get_db)
 ):
     """
     Accept audio file from browser and process it.
     Browser records audio using MediaRecorder API and uploads it here.
+    Saves conversation to database if user is authenticated.
     """
-    return await upload_audio(session_id=session_id, audio_file=audio_file)
+    return await upload_audio(
+        session_id=session_id,
+        audio_file=audio_file,
+        current_user=current_user,
+        db=db
+    )
 
 
 @app.post("/api/save-analysis")
@@ -93,7 +103,8 @@ async def post_save_analysis(
     db: Optional[Session] = Depends(get_db)
 ):
     """
-    Save analysis results to database for authenticated users
+    Save or update analysis results to database for authenticated users.
+    Idempotent: safe to call multiple times with same session_id.
     """
     from database.models import Conversation as ConversationModel
     import json
@@ -106,17 +117,32 @@ async def post_save_analysis(
         conversation_id = None
         if current_user and db:
             try:
-                conversation = ConversationModel(
-                    session_id=session_id,
-                    paramedic_id=current_user.id,
-                    transcript=transcript,
-                    analysis=analysis_data
-                )
-                db.add(conversation)
+                # Check if conversation already exists (idempotent operation)
+                conversation = db.query(ConversationModel).filter_by(
+                    session_id=session_id
+                ).first()
+                
+                if conversation:
+                    # Update existing conversation
+                    conversation.transcript = transcript
+                    conversation.analysis = analysis_data
+                    conversation_id = conversation.id
+                    print(f"🔄 Updated existing conversation (ID: {conversation_id}) for session: {session_id[:8]}")
+                else:
+                    # Create new conversation
+                    conversation = ConversationModel(
+                        session_id=session_id,
+                        paramedic_id=current_user.id,
+                        transcript=transcript,
+                        analysis=analysis_data
+                    )
+                    db.add(conversation)
+                    print(f"💾 Created new conversation for session: {session_id[:8]}")
+                
                 db.commit()
                 db.refresh(conversation)
                 conversation_id = conversation.id
-                print(f"💾 Saved conversation to database (ID: {conversation_id})")
+                
             except Exception as db_error:
                 print(f"⚠️  Failed to save to database: {str(db_error)}")
                 db.rollback()

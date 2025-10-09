@@ -30,16 +30,22 @@ async def root():
 
 
 async def upload_audio(
-    session_id: str = Form(...),
-    audio_file: UploadFile = File(...),
-    current_user: Optional[Paramedic] = Depends(get_optional_current_user),
-    db: Session = Depends(get_db)
+    session_id: str,
+    audio_file: UploadFile,
+    current_user: Optional[Paramedic] = None,
+    db: Optional[Session] = None
 ):
     """
     Accept audio file from browser and process it.
     Browser records audio using MediaRecorder API and uploads it here.
     
     If authentication is enabled and user is logged in, saves conversation to database.
+    
+    Args:
+        session_id: Unique session identifier
+        audio_file: Uploaded audio file
+        current_user: Authenticated user (if logged in)
+        db: Database session (if available)
     """
     try:
         # Generate timestamp
@@ -66,20 +72,34 @@ async def upload_audio(
         
         # Save to database if auth is enabled and user is logged in
         conversation_id = None
-        if ENABLE_AUTH and current_user:
+        if ENABLE_AUTH and current_user and db:
             try:
-                # Create conversation record
-                conversation = ConversationModel(
-                    session_id=session_id,
-                    paramedic_id=current_user.id,
-                    transcript=transcript,
-                    analysis=analysis
-                )
-                db.add(conversation)
+                # Check if conversation already exists (idempotent operation)
+                conversation = db.query(ConversationModel).filter_by(
+                    session_id=session_id
+                ).first()
+                
+                if conversation:
+                    # Update existing conversation
+                    conversation.transcript = transcript
+                    conversation.analysis = analysis
+                    conversation_id = conversation.id
+                    print(f"🔄 Updated existing conversation (ID: {conversation_id}) for session: {short_session}")
+                else:
+                    # Create new conversation
+                    conversation = ConversationModel(
+                        session_id=session_id,
+                        paramedic_id=current_user.id,
+                        transcript=transcript,
+                        analysis=analysis
+                    )
+                    db.add(conversation)
+                    print(f"💾 Created new conversation for session: {short_session}")
+                
                 db.commit()
                 db.refresh(conversation)
                 conversation_id = conversation.id
-                print(f"💾 Saved conversation to database (ID: {conversation_id}) for user: {current_user.name}")
+                
             except Exception as db_error:
                 print(f"⚠️  Failed to save to database: {str(db_error)}")
                 db.rollback()

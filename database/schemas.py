@@ -88,6 +88,20 @@ class ConversationSummary(BaseModel):
         from_attributes = True
 
 
+class PaginationMeta(BaseModel):
+    """Pagination metadata"""
+    page: int
+    limit: int
+    total: int
+    has_more: bool
+
+
+class ConversationListResponse(BaseModel):
+    """Paginated conversation list response"""
+    conversations: List[ConversationSummary]
+    pagination: PaginationMeta
+
+
 # ============ Authentication Schemas ============
 
 class Token(BaseModel):

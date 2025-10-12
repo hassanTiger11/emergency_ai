@@ -4,10 +4,13 @@ Endpoints for user profile management and conversation history
 """
 import os
 import shutil
+import base64
+import io
 from pathlib import Path
 from typing import List
 from fastapi import Depends, HTTPException, status, APIRouter, UploadFile, File
 from sqlalchemy.orm import Session
+from PIL import Image
 
 from endpoints.config import PROFILE_PICS_DIR
 from database.connection import get_db
@@ -16,11 +19,44 @@ from database.schemas import (
     ParamedicResponse,
     ParamedicUpdate,
     ConversationResponse,
-    ConversationSummary
+    ConversationSummary,
+    ConversationListResponse,
+    PaginationMeta
 )
 from database.auth import get_current_user, get_password_hash
 
 router = APIRouter(prefix="/api/user", tags=["user"])
+
+
+def compress_profile_picture(file_content: bytes, max_size: int = 300) -> bytes:
+    """
+    Compress and resize profile picture for optimal storage and loading.
+    
+    Args:
+        file_content: Raw image file bytes
+        max_size: Maximum width/height in pixels (default 300)
+    
+    Returns:
+        Compressed JPEG image bytes
+    """
+    img = Image.open(io.BytesIO(file_content))
+    
+    # Convert RGBA to RGB if needed (JPEG doesn't support transparency)
+    if img.mode in ('RGBA', 'LA', 'P'):
+        background = Image.new('RGB', img.size, (255, 255, 255))
+        if img.mode == 'RGBA':
+            background.paste(img, mask=img.split()[-1])
+        else:
+            background.paste(img)
+        img = background
+    
+    # Resize maintaining aspect ratio
+    img.thumbnail((max_size, max_size), Image.Resampling.LANCZOS)
+    
+    # Compress to JPEG with 80% quality
+    output = io.BytesIO()
+    img.save(output, format='JPEG', quality=80, optimize=True)
+    return output.getvalue()
 
 
 @router.get("/profile", response_model=ParamedicResponse)
@@ -112,22 +148,26 @@ async def upload_profile_picture(
         )
     
     try:
-        # Read file content and encode as base64
+        # Read file content
         file_content = await file.read()
-        import base64
-        base64_data = base64.b64encode(file_content).decode('utf-8')
         
-        # Determine MIME type for data URL
-        mime_type = "image/jpeg"  # default
-        if file_ext in ['.png']:
-            mime_type = "image/png"
-        elif file_ext in ['.gif']:
-            mime_type = "image/gif"
-        elif file_ext in ['.webp']:
-            mime_type = "image/webp"
+        # Compress and resize the image (300x300px, 80% quality JPEG)
+        compressed_content = compress_profile_picture(file_content, max_size=300)
+        
+        # Encode compressed image as base64
+        base64_data = base64.b64encode(compressed_content).decode('utf-8')
+        
+        # Always use JPEG MIME type since we compress to JPEG
+        mime_type = "image/jpeg"
         
         # Create data URL
         data_url = f"data:{mime_type};base64,{base64_data}"
+        
+        # Log the compression savings
+        original_size = len(file_content)
+        compressed_size = len(compressed_content)
+        reduction = ((original_size - compressed_size) / original_size) * 100
+        print(f"📸 Compressed profile picture: {original_size:,} → {compressed_size:,} bytes ({reduction:.1f}% smaller)")
         
         # Update user profile with base64 data
         current_user.profile_pic_data = data_url
@@ -164,19 +204,38 @@ async def delete_profile_picture(
     return ParamedicResponse.model_validate(current_user)
 
 
-@router.get("/conversations", response_model=List[ConversationSummary])
+@router.get("/conversations", response_model=ConversationListResponse)
 async def get_conversations(
     current_user: Paramedic = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    page: int = 1,
+    limit: int = 10
 ):
     """
-    Get all conversations for the current user
+    Get paginated conversations for the current user
     
-    Returns a summary of all conversations, sorted by most recent first.
+    Parameters:
+    - page: Page number (default: 1)
+    - limit: Number of conversations per page (default: 10, max: 50)
+    
+    Returns a summary of conversations with pagination metadata.
     """
+    # Validate and cap limit
+    limit = min(limit, 50)  # Max 50 per page
+    page = max(page, 1)  # Minimum page 1
+    
+    # Calculate offset
+    offset = (page - 1) * limit
+    
+    # Get total count
+    total = db.query(Conversation).filter(
+        Conversation.paramedic_id == current_user.id
+    ).count()
+    
+    # Get paginated conversations
     conversations = db.query(Conversation).filter(
         Conversation.paramedic_id == current_user.id
-    ).order_by(Conversation.created_at.desc()).all()
+    ).order_by(Conversation.created_at.desc()).offset(offset).limit(limit).all()
     
     # Convert to summary format
     summaries = []
@@ -194,7 +253,18 @@ async def get_conversations(
         
         summaries.append(summary)
     
-    return summaries
+    # Create pagination metadata
+    pagination = PaginationMeta(
+        page=page,
+        limit=limit,
+        total=total,
+        has_more=offset + limit < total
+    )
+    
+    return ConversationListResponse(
+        conversations=summaries,
+        pagination=pagination
+    )
 
 
 @router.get("/conversations/{conversation_id}", response_model=ConversationResponse)

@@ -230,4 +230,53 @@
     background: #555;
 }
 
+/* Load More Button */
+.load-more-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background: transparent;
+    border: 1px solid #444;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+}
+
+.load-more-btn:hover:not(:disabled) {
+    background: #2c2d2f;
+    border-color: #666;
+}
+
+.load-more-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Skeleton Loaders */
+.skeleton {
+    background: linear-gradient(90deg, #2c2d2f 25%, #3a3b3c 50%, #2c2d2f 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 6px;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.profile-skeleton {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.conversation-skeleton {
+    height: 60px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+}
+
 

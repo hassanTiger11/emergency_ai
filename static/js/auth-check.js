@@ -7,6 +7,70 @@
 let authEnabled = false;
 let currentUser = null;
 
+// Profile picture caching configuration
+const PROFILE_CACHE_KEY = 'profile_pic_cache';
+const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+/**
+ * Get cached profile picture for a user
+ * @param {number} userId - The user's ID
+ * @returns {string|null} - Cached profile picture data URL or null if not found/expired
+ */
+function getCachedProfilePic(userId) {
+    try {
+        const cache = JSON.parse(localStorage.getItem(PROFILE_CACHE_KEY) || '{}');
+        const cached = cache[userId];
+        
+        if (cached && Date.now() - cached.timestamp < CACHE_EXPIRY) {
+            console.log('💾 Using cached profile picture');
+            return cached.data;
+        }
+        
+        // Expired or not found
+        if (cached) {
+            console.log('⏰ Profile picture cache expired');
+        }
+        return null;
+    } catch (e) {
+        console.error('Error reading profile picture cache:', e);
+        return null;
+    }
+}
+
+/**
+ * Cache profile picture for a user
+ * @param {number} userId - The user's ID
+ * @param {string} data - Profile picture data URL
+ */
+function cacheProfilePic(userId, data) {
+    try {
+        const cache = JSON.parse(localStorage.getItem(PROFILE_CACHE_KEY) || '{}');
+        cache[userId] = { 
+            data, 
+            timestamp: Date.now() 
+        };
+        localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(cache));
+        console.log('💾 Profile picture cached successfully');
+    } catch (e) {
+        console.error('Error caching profile picture:', e);
+    }
+}
+
+/**
+ * Clear profile picture cache for a user (useful after picture update/delete)
+ * @param {number} userId - The user's ID
+ */
+function clearProfilePicCache(userId) {
+    try {
+        const cache = JSON.parse(localStorage.getItem(PROFILE_CACHE_KEY) || '{}');
+        delete cache[userId];
+        localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(cache));
+        console.log('🗑️ Profile picture cache cleared');
+    } catch (e) {
+        console.error('Error clearing profile picture cache:', e);
+    }
+}
+
 async function checkAuthStatus(retryCount = 0) {
     try {
         // Try to get auth endpoints - if they exist, auth is enabled
@@ -24,6 +88,12 @@ async function checkAuthStatus(retryCount = 0) {
             // User is authenticated
             currentUser = await response.json();
             localStorage.setItem('user_info', JSON.stringify(currentUser));
+            
+            // Cache profile picture for faster future loads
+            if (currentUser.profile_pic_data) {
+                cacheProfilePic(currentUser.id, currentUser.profile_pic_data);
+            }
+            
             showSidebar(currentUser);  // Pass the fresh user data
             console.log('✅ User authenticated:', currentUser.name);
             
@@ -126,8 +196,14 @@ function showSidebar(userData = null) {
             }
             
             if (userAvatarElement) {
-                // Use profile picture if available, otherwise use emoji
-                if (user.profile_pic_data) {
+                // Try to use cached profile picture first for instant loading
+                const cachedPic = user.id ? getCachedProfilePic(user.id) : null;
+                
+                if (cachedPic) {
+                    // Use cached picture (instant load from localStorage)
+                    userAvatarElement.innerHTML = `<img src="${cachedPic}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                } else if (user.profile_pic_data) {
+                    // Use fresh profile picture data
                     userAvatarElement.innerHTML = `<img src="${user.profile_pic_data}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
                 } else if (user.profile_pic_url) {
                     // Fallback to URL with error handling for 404

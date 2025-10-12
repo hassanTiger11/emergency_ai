@@ -9,6 +9,43 @@ if (!authToken) {
     window.location.href = '/login.html';
 }
 
+// Profile picture caching configuration (same as auth-check.js)
+const PROFILE_CACHE_KEY = 'profile_pic_cache';
+
+/**
+ * Clear profile picture cache for a user
+ * @param {number} userId - The user's ID
+ */
+function clearProfilePicCache(userId) {
+    try {
+        const cache = JSON.parse(localStorage.getItem(PROFILE_CACHE_KEY) || '{}');
+        delete cache[userId];
+        localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(cache));
+        console.log('🗑️ Profile picture cache cleared for user:', userId);
+    } catch (e) {
+        console.error('Error clearing profile picture cache:', e);
+    }
+}
+
+/**
+ * Cache profile picture for a user
+ * @param {number} userId - The user's ID
+ * @param {string} data - Profile picture data URL
+ */
+function cacheProfilePic(userId, data) {
+    try {
+        const cache = JSON.parse(localStorage.getItem(PROFILE_CACHE_KEY) || '{}');
+        cache[userId] = { 
+            data, 
+            timestamp: Date.now() 
+        };
+        localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(cache));
+        console.log('💾 Profile picture cached successfully for user:', userId);
+    } catch (e) {
+        console.error('Error caching profile picture:', e);
+    }
+}
+
 // Get authorization headers
 function getAuthHeaders() {
     return {
@@ -168,6 +205,12 @@ document.getElementById('profilePicInput').addEventListener('change', async (e) 
             const user = await response.json();
             localStorage.setItem('user_info', JSON.stringify(user));
             
+            // Clear old cache and cache new profile picture
+            clearProfilePicCache(user.id);
+            if (user.profile_pic_data) {
+                cacheProfilePic(user.id, user.profile_pic_data);
+            }
+            
             // Update preview
             const container = document.getElementById('profilePicContainer');
             if (user.profile_pic_data) {
@@ -211,6 +254,9 @@ document.getElementById('deletePhotoBtn').addEventListener('click', async () => 
         if (response.ok) {
             const user = await response.json();
             localStorage.setItem('user_info', JSON.stringify(user));
+            
+            // Clear cached profile picture
+            clearProfilePicCache(user.id);
             
             // Reset to placeholder
             const container = document.getElementById('profilePicContainer');

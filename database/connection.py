@@ -3,6 +3,7 @@ Database Connection and Session Management
 """
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.pool import QueuePool
 from typing import Generator
 import sys
 
@@ -18,9 +19,13 @@ if ENABLE_AUTH:
     try:
         engine = create_engine(
             DATABASE_URL,
-            pool_pre_ping=True,  # Verify connections before using them
-            pool_recycle=3600,   # Recycle connections after 1 hour
-            echo=False,  # Set to True for SQL logging during development
+            # Connection pooling configuration for better performance
+            poolclass=QueuePool,        # Use connection pooling
+            pool_size=10,                # Keep 10 connections in the pool
+            max_overflow=20,             # Allow up to 20 extra connections when needed
+            pool_pre_ping=True,          # Verify connections before using them
+            pool_recycle=3600,           # Recycle connections after 1 hour
+            echo=False,                  # Set to True for SQL logging during development
             connect_args={"connect_timeout": 10}  # 10 second connection timeout
         )
         # Test the connection immediately
@@ -28,6 +33,7 @@ if ENABLE_AUTH:
             conn.execute(text("SELECT 1"))
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         print("✅ Database connection established successfully")
+        print(f"   Connection pool: size={10}, max_overflow={20}")
     except Exception as e:
         DB_CONNECTION_ERROR = str(e)
         print(f"❌ Database connection failed: {DB_CONNECTION_ERROR}")
